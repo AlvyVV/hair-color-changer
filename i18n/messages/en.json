@@ -1,0 +1,267 @@
+{
+  "metadata": {
+    "title": "Ship Any AI SaaS Startups in hours | ShipAny",
+    "description": "ShipAny is a NextJS boilerplate for building AI SaaS startups, Ship Fast with a variety of templates and components.",
+    "keywords": "ShipAny, AI SaaS Boilerplate, NextJS Boilerplate"
+  },
+  "common": {
+    "validation": {
+      "image_file_only": "Please select an image file",
+      "file_size_limit": "File size must be less than 10MB",
+      "prompt_required": "Please enter a prompt",
+      "image_required": "Please upload a reference image for image-to-image mode"
+    },
+    "error": {
+      "upload_failed": "Upload failed. Please try again.",
+      "generation_failed": "Image generation failed. Please try again.",
+      "generation_start_failed": "Failed to start image generation. Please try again."
+    }
+  },
+  "share": {
+    "twitter_text": "Check out this amazing AI-generated image! Created with FLUX AI 🎨✨",
+    "linkedin_text": "Amazing AI-generated image created with FLUX",
+    "copy_success": "Image URL copied to clipboard!",
+    "copy_failed": "Failed to copy URL"
+  },
+  "preview": {
+    "download": "Download",
+    "copy_link": "Copy Link",
+    "share_to": "Share to:"
+  },
+  "user": {
+    "sign_in": "Sign In",
+    "sign_out": "Sign Out",
+    "my_chat": "My Chat",
+    "credits": "Credits",
+    "api_keys": "API Keys",
+    "my_orders": "My Orders",
+    "user_center": "User Center",
+    "admin_system": "Admin System"
+  },
+  "sign_modal": {
+    "sign_in_title": "Sign In",
+    "sign_in_description": "Sign in to your account",
+    "sign_up_title": "Sign Up",
+    "sign_up_description": "Create an account",
+    "email_title": "Email",
+    "email_placeholder": "Input your email here",
+    "password_title": "Password",
+    "password_placeholder": "Input your password here",
+    "forgot_password": "Forgot password?",
+    "or": "Or",
+    "continue": "Continue",
+    "no_account": "Don't have an account?",
+    "email_sign_in": "Sign in with Email",
+    "google_sign_in": "Sign in with Google",
+    "github_sign_in": "Sign in with GitHub",
+    "close_title": "Close",
+    "cancel_title": "Cancel"
+  },
+  "friend_links": {
+    "default_category": "Friend Sites",
+    "visit": "Visit",
+    "no_links": "No friend links available"
+  },
+  "pure_badge_wall": {
+    "default_category": "Partners",
+    "no_badges": "No badges available"
+  },
+  "my_orders": {
+    "title": "My Orders",
+    "description": "orders paid with ShipAny.",
+    "no_orders": "No orders found",
+    "tip": "",
+    "activate_order": "Activate Order",
+    "actived": "Activated",
+    "join_discord": "Join Discord",
+    "read_docs": "Read Docs",
+    "table": {
+      "order_no": "Order No",
+      "email": "Email",
+      "product_name": "Product Name",
+      "amount": "Amount",
+      "paid_at": "Paid At",
+      "created_at": "Created At",
+      "github_username": "GitHub Username",
+      "status": "Status",
+      "status_pending": "Pending",
+      "status_completed": "Completed",
+      "status_failed": "Failed",
+      "status_cancelled": "Cancelled"
+    }
+  },
+  "pay_success": {
+    "title": "Payment Successful!",
+    "description": "Thank you for your purchase, your order has been successfully completed.",
+    "order_details": "Order Details",
+    "order_info": "Here is your order information",
+    "payment_success": "Payment Successful",
+    "order_number": "Order Number",
+    "amount": "Payment Amount",
+    "order_type": "Order Type",
+    "payment_time": "Payment Time",
+    "product_info": "Product Information",
+    "one_time": "One-time Purchase",
+    "subscription": "Subscription",
+    "view_orders": "View My Orders",
+    "back_home": "Back to Home",
+    "thank_you": "Thank You for Your Trust",
+    "thank_you_message": "We will continue to provide you with quality service. If you have any questions, please feel free to contact us."
+  },
+  "my_credits": {
+    "title": "My Credits",
+    "left_tip": "left credits: {left_credits}",
+    "no_credits": "No credits records",
+    "recharge": "Recharge",
+    "table": {
+      "trans_no": "Trans No",
+      "trans_type": "Trans Type",
+      "credits": "Credits",
+      "balance_after": "Balance After",
+      "updated_at": "Updated At",
+      "status": "Status"
+    }
+  },
+  "api_keys": {
+    "title": "API Keys",
+    "tip": "Please keep your apikey safe to avoid leaks",
+    "no_api_keys": "No API Keys",
+    "create_api_key": "Create API Key",
+    "table": {
+      "name": "Name",
+      "key": "Key",
+      "created_at": "Created At"
+    },
+    "form": {
+      "name": "Name",
+      "name_placeholder": "API Key Name",
+      "submit": "Submit"
+    }
+  },
+  "blog": {
+    "title": "Blog",
+    "description": "News, resources, and updates about ShipAny",
+    "read_more_text": "Read More"
+  },
+  "my_invites": {
+    "title": "My Invites",
+    "description": "View your invite records",
+    "no_invites": "No invite records found",
+    "my_invite_link": "My Invite Link",
+    "edit_invite_link": "Edit Invite Link",
+    "copy_invite_link": "Copy Invite Link",
+    "invite_code": "Invite Code",
+    "invite_tip": "Invite 1 friend to buy ShipAny, reward $50.",
+    "invite_balance": "Invite Reward Balance",
+    "total_invite_count": "Total Invite Count",
+    "total_paid_count": "Total Paid Count",
+    "total_award_amount": "Total Award Amount",
+    "update_invite_code": "Set Invite Code",
+    "update_invite_code_tip": "Input your custom invite code",
+    "update_invite_button": "Save",
+    "no_orders": "You can't invite others before you bought ShipAny",
+    "no_affiliates": "You're not allowed to invite others, please contact us to apply for permission.",
+    "table": {
+      "invite_time": "Invite Time",
+      "invite_user": "Invite User",
+      "status": "Status",
+      "reward_percent": "Reward Percent",
+      "reward_amount": "Reward Amount",
+      "pending": "Pending",
+      "completed": "Completed"
+    }
+  },
+  "feedback": {
+    "title": "Feedback",
+    "description": "We'd love to hear what went well or how we can improve the product experience.",
+    "submit": "Submit",
+    "loading": "Submitting...",
+    "contact_tip": "Other ways to contact us",
+    "rating_tip": "How do you feel about ShipAny?",
+    "placeholder": "Leave your words here..."
+  },
+  "my_media_records": {
+    "title": "My Media Records",
+    "description": "Your generated or uploaded media records.",
+    "table": {
+      "created_at": "Created At",
+      "type": "Type",
+      "status": "Status",
+      "name": "Name",
+      "biz_code": "Business Code"
+    },
+    "no_records": "No media records yet."
+  },
+  "text_to_image": {
+    "select_model": "Select Model",
+    "aspect_ratio": "Aspect Ratio",
+    "clear_prompt": "Clear Prompt",
+    "generate_image": "Generate Image",
+    "please_select_model_first": "Please select a model first",
+    "please_input_prompt_and_select_model": "Please enter prompt and select model",
+    "select_style": "Select Style",
+    "selected": "Selected",
+    "please_input_prompt": "Please enter prompt",
+    "please_select_model": "Please select model",
+    "clear": "Clear",
+    "confirm_generation": "Confirm Generation",
+    "confirm_and_fill_parameters": "Please confirm and fill in required parameters.",
+    "no_additional_parameters": "No additional parameters required. Click confirm to start generation.",
+    "confirm": "Confirm",
+    "select_ai_model_placeholder": "Please select AI model...",
+    "select_aspect_ratio_placeholder": "Select model first",
+    "credits": "credits",
+    "generated_image_alt": "Generated image",
+    "confirm_modify_prompt": "Image is still being generated. After modifying the prompt, you need to check the generation progress in 'User Media Records'. Are you sure you want to modify?",
+    "task_id": "Task ID",
+    "loading": "Loading..."
+  },
+  "flux": {
+    "title": "FLUX Krea Image Generator",
+    "description": "Create stunning images with AI - Text to Image or Image to Image",
+    "login_incentive": "Sign up now and get 20 free credits! Generate 2 stunning images to try our AI-powered FLUX generator.",
+    "mode": {
+      "text_to_image": "Text to Image",
+      "image_to_image": "Image to Image"
+    },
+    "form": {
+      "prompt": "Prompt",
+      "prompt_placeholder": "Describe the image you want to generate...",
+      "prompt_hint": "Be detailed and specific about what you want to see",
+      "upload_image": "Upload Reference Image",
+      "modification_prompt": "Modification Prompt",
+      "modification_placeholder": "Describe how you want to modify the image...",
+      "transformation_strength": "Transformation Strength",
+      "transformation_strength_subtitle": "Subtle (0.1) to Strong (1.0)",
+      "image_size": "Image Size",
+      "inference_steps": "Inference Steps",
+      "inference_steps_subtitle": "Fast (10) to Quality (50)",
+      "guidance_scale": "Guidance Scale",
+      "guidance_scale_subtitle": "Creative (1) to Precise (20)"
+    },
+    "ui": {
+      "generation_settings": "Generation Settings",
+      "preview": "Preview",
+      "estimated_time": "~18s",
+      "credits_required": "-10 credits",
+      "reset": "Reset",
+      "generate": "Generate Image",
+      "generating": "Generating... {progress}%",
+      "download": "Download",
+      "save": "Save",
+      "more": "More",
+      "preview_placeholder_title": "Your generated image will appear here",
+      "preview_placeholder_subtitle": "Configure your settings and click \"Generate Image\" to start",
+      "generating_title": "Generating your image...",
+      "generating_subtitle": "Progress: {progress}%",
+      "drop_image_hint": "Drop an image here or click to upload",
+      "upload_requirements": "Supports JPG, PNG, WebP (max 10MB)"
+    }
+  },
+  "language_reminder": {
+    "detected": "We detected you might prefer",
+    "switch_to": "Switch to {language}",
+    "not_now": "Not now",
+    "close": "Close"
+  }
+}

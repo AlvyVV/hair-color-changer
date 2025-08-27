@@ -1,0 +1,280 @@
+{
+  "template": "shipany-template-one",
+  "theme": "light",
+  "hero": {
+    "title": "Your Ultimate AI Image Style Generator",
+    "highlight_text": "AI Image Style",
+    "description": "Instantly generate stunning visuals in any art style imaginable. From Van Gogh to Anime, our AI brings your creative ideas to life. <br/>No design skills needed.",
+    "announcement": {
+      "label": "New",
+      "title": "🎨 Now Supporting Style Transfer Between Two Images!",
+      "url": "/style-transfer"
+    },
+    "tip": "🎁 Get started for free. No credit card required.",
+    "buttons": [
+      {
+        "title": "Generate Your Art",
+        "icon": "RiFlashlightFill",
+        "url": "/#generator",
+        "target": "_self",
+        "variant": "default"
+      },
+      {
+        "title": "Explore Styles",
+        "icon": "RiPaintBrushLine",
+        "url": "/ai-art-styles",
+        "target": "_self",
+        "variant": "outline"
+      }
+    ],
+    "show_happy_users": true,
+    "show_badge": false
+  },
+  "branding": {
+    "title": "Trusted by Creators and Digital Artists Worldwide",
+    "items": []
+  },
+  "introduce": {
+    "name": "generator",
+    "title": "How Our AI Art Style Generator Works",
+    "label": "How It Works",
+    "description": "Transform your text prompts into unique, high-quality art in three simple steps. Our advanced AI models understand both content and style.",
+    "image": {
+      "src": "/imgs/features/how-it-works.png"
+    },
+    "items": [
+      {
+        "title": "1. Describe Your Vision",
+        "description": "Write a text prompt describing what you want to see. Be as simple or as detailed as you like.",
+        "icon": "RiQuillPenLine"
+      },
+      {
+        "title": "2. Choose Your AI Art Style",
+        "description": "Select from a vast library of styles—from classic painters to modern digital art—or upload your own.",
+        "icon": "RiGalleryLine"
+      },
+      {
+        "title": "3. Generate & Refine",
+        "description": "Our AI creates your masterpiece in seconds. Don't like it? Tweak the prompt or style and try again.",
+        "icon": "RiMagicLine"
+      }
+    ]
+  },
+  "benefit": {
+    "name": "features",
+    "title": "More Than Just a Generator",
+    "label": "Core Features",
+    "description": "Unlock a full suite of AI-powered tools designed to give you complete creative control over your artistic style.",
+    "items": [
+      {
+        "title": "AI Style Transfer",
+        "description": "Apply the artistic style from any reference image to your own photos. Turn a selfie into a Picasso portrait instantly.",
+        "icon": "RiShuffleLine",
+        "image": {
+          "src": "/imgs/features/style-transfer.png"
+        }
+      },
+      {
+        "title": "Intelligent Style Library",
+        "description": "Explore hundreds of pre-trained AI art styles. Each style is an entity our AI understands deeply, ensuring authentic results.",
+        "icon": "RiApps2Line",
+        "image": {
+          "src": "/imgs/features/style-library.png"
+        }
+      },
+      {
+        "title": "AI Prompt Extractor",
+        "description": "Love an image? Upload it, and our AI will analyze it to generate descriptive keywords and prompts you can use.",
+        "icon": "RiChatQuoteLine",
+        "image": {
+          "src": "/imgs/features/prompt-extractor.png"
+        }
+      }
+    ]
+  },
+  "usage": {
+    "name": "usage",
+    "title": "Create Your First Masterpiece",
+    "description": "Follow this guide to see how easy it is to bring your imagination to life with our AI.",
+    "image": {
+      "src": "/imgs/features/usage-guide.png"
+    },
+    "image_position": "left",
+    "text_align": "left",
+    "items": [
+      {
+        "title": "Start with a Text Prompt",
+        "description": "Example: 'A majestic lion wearing a crown, sitting on a throne in a futuristic city'.",
+        "image": {
+          "src": "/imgs/usage/step1.png"
+        }
+      },
+      {
+        "title": "Select 'Cyberpunk' Style",
+        "description": "Browse our style library and click on the 'Cyberpunk' preset to apply its neon and high-tech aesthetic.",
+        "image": {
+          "src": "/imgs/usage/step2.png"
+        }
+      },
+      {
+        "title": "Hit 'Generate'",
+        "description": "Watch as the AI combines your prompt with the chosen style to create a unique piece of art.",
+        "image": {
+          "src": "/imgs/usage/step3.png"
+        }
+      },
+      {
+        "title": "Apply Style to Your Photo",
+        "description": "Alternatively, upload your own photo and a style image (like a Van Gogh painting) to merge them.",
+        "image": {
+          "src": "/imgs/usage/step4.png"
+        }
+      }
+    ]
+  },
+  "feature": {
+    "name": "why-us",
+    "title": "Why Choose AI-Style.art?",
+    "description": "We focus on quality, control, and authenticity to provide a superior creative experience.",
+    "items": [
+      {
+        "title": "Authentic Style Emulation",
+        "description": "Our AI is trained on art history, not just images, to better capture the essence of each style entity.",
+        "icon": "RiBankLine"
+      },
+      {
+        "title": "High-Resolution Output",
+        "description": "Generate images suitable for printing, social media, and professional projects.",
+        "icon": "RiAspectRatioLine"
+      },
+      {
+        "title": "Advanced Model Selection",
+        "description": "For experts, choose specific AI models that best suit your desired outcome and style.",
+        "icon": "RiRobot2Line"
+      },
+      {
+        "title": "Privacy-Focused",
+        "description": "Your uploaded images are yours. We use them only for generation and do not store them without permission.",
+        "icon": "RiShieldCheckLine"
+      },
+      {
+        "title": "Rapid Generation",
+        "description": "Our optimized infrastructure delivers your artwork in seconds, not minutes.",
+        "icon": "RiSpeedUpLine"
+      },
+      {
+        "title": "Simple & Intuitive UI",
+        "description": "A clean, user-friendly interface that's powerful for pros and easy for beginners.",
+        "icon": "RiMouseLine"
+      }
+    ]
+  },
+  "stats": {
+    "name": "stats",
+    "label": "Community",
+    "title": "Join Millions of Creators",
+    "description": "who are pushing the boundaries of art and technology.",
+    "icon": "FaRegHeart",
+    "items": [
+      {
+        "title": "Creations Generated",
+        "label": "10M+",
+        "description": "Artworks"
+      },
+      {
+        "title": "Unique Styles",
+        "label": "500+",
+        "description": "Available"
+      },
+      {
+        "title": "Happy Users",
+        "label": "1.2M+",
+        "description": "Worldwide"
+      }
+    ]
+  },
+  "testimonial": {
+    "name": "testimonial",
+    "label": "Showcase",
+    "title": "What Our Users Create (Experience)",
+    "description": "See the real-world results from artists, designers, and hobbyists using our AI style generator.",
+    "icon": "GoThumbsup",
+    "items": [
+      {
+        "title": "Lana, Digital Artist",
+        "label": "Experience in Action",
+        "description": "The AI style transfer is a game-changer for my workflow. I can quickly apply a consistent aesthetic across a whole series of works. The 'Impressionism' style is incredibly accurate!",
+        "image": {
+          "src": "/imgs/users/1.png"
+        }
+      },
+      {
+        "title": "Mark, Game Developer",
+        "label": "Experience in Action",
+        "description": "I use AI-Style.art to prototype concept art. The 'Cyberpunk' and 'Steampunk' styles are perfect for generating environment ideas in minutes. Saves me hundreds of hours.",
+        "image": {
+          "src": "/imgs/users/2.png"
+        }
+      },
+      {
+        "title": "Chloe, Small Business Owner",
+        "label": "Experience in Action",
+        "description": "As someone with zero art skills, I can finally create professional-looking social media posts. The 'Watercolor' style is my favorite for product announcements!",
+        "image": {
+          "src": "/imgs/users/3.png"
+        }
+      }
+    ]
+  },
+  "faq": {
+    "name": "faq",
+    "label": "FAQ",
+    "title": "Frequently Asked Questions",
+    "description": "Everything you need to know about creating with AI art styles.",
+    "items": [
+      {
+        "title": "What is an AI art style?",
+        "description": "An AI art style is a visual aesthetic that an artificial intelligence model has learned to recognize and replicate. It's more than a filter; the AI understands the core characteristics of an entity—like Van Gogh's brushstrokes or Anime's line art—and applies them to a new image or prompt."
+      },
+      {
+        "title": "How does AI style transfer work?",
+        "description": "AI style transfer uses a deep learning technique where two images are provided: a 'content' image (like your photo) and a 'style' reference image (like a painting). The AI then redraws the content image to match the texture, color palette, and patterns of the style reference."
+      },
+      {
+        "title": "Can I use the images I generate for commercial purposes?",
+        "description": "This depends on the plan you choose. Our free plan is for personal use only. Our Pro plans grant you full ownership and commercial rights to the images you create, provided your input prompt and images do not infringe on existing copyrights."
+      },
+      {
+        "title": "Is my data and are my uploaded images safe?",
+        "description": "Yes. We take privacy seriously. Your uploaded images are used solely for the generation process and are automatically deleted from our servers after 24 hours unless you choose to save them to your private gallery. We do not use your images for AI training."
+      },
+      {
+        "title": "What makes your AI art styles different from others?",
+        "description": "Our focus is on entity-based style learning. Instead of just mimicking surface looks, our models are trained with contextual information about the artists, movements, and techniques, leading to more authentic and nuanced results. This provides a clear 'information gain' for both users and search engines."
+      },
+      {
+        "title": "What is a prompt extractor?",
+        "description": "Our prompt extractor tool analyzes an existing image and generates a text description (a prompt) and relevant keywords that could be used to create a similar image. It's a great way to deconstruct an art style you admire and learn about prompt engineering."
+      }
+    ]
+  },
+  "cta": {
+    "name": "cta",
+    "title": "Ready to Create Your Own AI Art Style?",
+    "description": "Join our community and start generating stunning, unique artwork today. Your next masterpiece is just a click away.",
+    "buttons": [
+      {
+        "title": "Start for Free",
+        "url": "/#generator",
+        "target": "_self",
+        "icon": "RiImageEditLine"
+      },
+      {
+        "title": "Explore the Style Library",
+        "url": "/ai-art-styles",
+        "target": "_self",
+        "variant": "outline"
+      }
+    ]
+  }
+}

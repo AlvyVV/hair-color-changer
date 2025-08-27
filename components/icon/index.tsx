@@ -1,0 +1,135 @@
+'use client';
+
+import {
+    RiApps2Line,
+    RiArrowDownSLine,
+    RiArrowRightUpLine,
+    RiAspectRatioLine,
+    RiBrainLine,
+    RiBrushLine,
+    RiChatQuoteLine,
+    RiCheckLine,
+    RiCloseFill,
+    RiCloseLine,
+    RiCodeLine,
+    RiCopperDiamondLine,
+    RiDiscordFill,
+    RiDownloadLine,
+    RiEye2Line,
+    RiExternalLinkLine,
+    RiFacebookLine,
+    RiFileCopyLine,
+    RiFileImageLine,
+    RiFocus2Line,
+    RiFocus3Line,
+    RiGalleryLine,
+    RiGiftLine,
+    RiGlobalLine,
+    RiHeartLine,
+    RiImage2Line,
+    RiInformationLine,
+    RiLinkedinLine,
+    RiLinksLine,
+    RiMagicLine,
+    RiMoreLine,
+    RiPaintBrushLine,
+    RiImageEditLine,
+    RiImageLine,
+    RiInputMethodLine,
+    RiInstagramLine,
+    RiLandscapeAiLine,
+    RiMenuLine,
+    RiMouseLine,
+    RiPaletteLine,
+    RiQuillPenLine,
+    RiRefreshLine,
+    RiSettings3Line,
+    RiShareLine,
+    RiShieldStarLine,
+    RiShuffleLine,
+    RiSparkling2Line,
+    RiSpeedUpLine,
+    RiStarLine,
+    RiTeamLine,
+    RiTerminalLine,
+    RiTwitterXLine,
+    RiTwitterXFill,
+    RiUpload2Line,
+} from 'react-icons/ri';
+
+// 精确映射每个具体图标
+const iconMap: { [key: string]: React.ElementType } = {
+    RiImageEditLine,
+    RiMenuLine,
+    RiArrowDownSLine,
+    RiPaintBrushLine,
+    RiBrainLine,
+    RiImage2Line,
+    RiRefreshLine,
+    RiSettings3Line,
+    RiCloseFill,
+    RiCloseLine,
+    RiFocus2Line,
+    RiFocus3Line,
+    RiCopperDiamondLine,
+    RiPaletteLine,
+    RiSpeedUpLine,
+    RiSparkling2Line,
+    RiGalleryLine,
+    RiImageLine,
+    RiInstagramLine,
+    RiFileImageLine,
+    RiUpload2Line,
+    RiDiscordFill,
+    RiLandscapeAiLine,
+    RiShuffleLine,
+    RiDownloadLine,
+    RiApps2Line,
+    RiGiftLine,
+    RiBrushLine,
+    RiTeamLine,
+    RiChatQuoteLine,
+    RiTwitterXFill,
+    RiTwitterXLine,
+    RiMouseLine,
+    RiAspectRatioLine,
+    RiArrowRightUpLine,
+    RiShieldStarLine,
+    RiCheckLine,
+    RiExternalLinkLine,
+    RiGlobalLine,
+    RiHeartLine,
+    RiLinksLine,
+    RiQuillPenLine,
+    RiMagicLine,
+    RiEye2Line,
+    RiMoreLine,
+    RiInputMethodLine,
+    RiStarLine,
+    RiCodeLine,
+    RiInformationLine,
+    RiTerminalLine,
+    RiFacebookLine,
+    RiLinkedinLine,
+    RiShareLine,
+    RiFileCopyLine,
+};
+
+export function Icon({name, className, onClick}: { name: string; className?: string; onClick?: () => void }) {
+    // 直接从 iconMap 中获取图标组件
+    const IconComponent = iconMap[name];
+    
+    // 如果找不到图标，返回 null 或者显示警告（开发环境）
+    if (!IconComponent) {
+        if (process.env.NODE_ENV === 'development') {
+            console.warn(`图标 "${name}" 未找到。请确保已在 iconMap 中添加该图标。`);
+        }
+        return null;
+    }
+
+    // 渲染图标组件
+    return <IconComponent className={`${className} cursor-pointer`} onClick={onClick}
+                          style={{cursor: onClick ? 'pointer' : 'default'}}/>;
+}
+
+export default Icon;

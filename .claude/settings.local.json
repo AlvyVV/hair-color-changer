@@ -1,0 +1,40 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(rm:*)",
+      "Bash(rg:*)",
+      "Bash(pnpm add:*)",
+      "Bash(pnpm remove:*)",
+      "Bash(grep:*)",
+      "Bash(pnpm build:*)",
+      "Bash(jq:*)",
+      "Bash(timeout 30s pnpm dev)",
+      "Bash(npx tsc:*)",
+      "Bash(node:*)",
+      "Bash(ls:*)",
+      "Bash(find:*)",
+      "Bash(npm run build:*)",
+      "Bash(npm install)",
+      "Bash(pnpm install:*)",
+      "Bash(npx next build:*)",
+      "Bash(mkdir:*)",
+      "WebFetch(domain:v5.ai-sdk.dev)",
+      "Bash(npm install:*)",
+      "WebFetch(domain:ai-sdk.dev)",
+      "Bash(pnpm dev:*)",
+      "mcp__ide__getDiagnostics",
+      "Bash(npm view:*)",
+      "Bash(pnpm lint:*)",
+      "WebFetch(domain:nextjs.org)",
+      "WebFetch(domain:nextjs.org)",
+      "Bash(pkill:*)",
+      "Bash(pnpm analyze:*)",
+      "mcp__mcp-magic-ui__getUIComponents",
+      "mcp__mcp-magic-ui__getSpecialEffects",
+      "Bash(pnpm dlx shadcn:*)",
+      "Bash(pnpm run:*)",
+      "mcp__mcp-magic-ui__getButtons"
+    ],
+    "deny": []
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "language_reminder": {
+    "detected": "我们检测到您可能更适合使用",
+    "switch_to": "切换到 {language}",
+    "not_now": "暂不切换",
+    "close": "关闭"
+  }
+}
