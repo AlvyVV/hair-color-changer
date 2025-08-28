@@ -263,5 +263,43 @@
     "switch_to": "Switch to {language}",
     "not_now": "Not now",
     "close": "Close"
+  },
+  "hair_color_changer": {
+    "upload_section": {
+      "drag_text": "Drop your image here",
+      "supported_formats": "Supports JPG, PNG, WEBP",
+      "upload_button": {
+        "title": "Upload Image"
+      }
+    },
+    "uploading": "Uploading...",
+    "select_hair_color": "Select Hair Color",
+    "selected_colors": "Selected {count} colors",
+    "loading": "Loading...",
+    "processing": "Processing {count} tasks...",
+    "please_upload_image": "Please upload an image first",
+    "please_select_colors": "Please select colors",
+    "start_transformation": "Start transformation with {count} colors ✨",
+    "transformation_results": "Transformation Results",
+    "completed_tasks": "{completed} / {total} completed",
+    "processing_status": "Processing Status",
+    "connected": "Connected",
+    "checking_status": "Checking status",
+    "processing_tasks": "Processing {count} tasks",
+    "tips_title": "Tips for best results:",
+    "tips": [
+      "Use clear photos where hair is visible",
+      "Good lighting works best (natural light)",
+      "Avoid heavily filtered photos",
+      "Works on all hair types and styles"
+    ],
+    "download_all": "Download All",
+    "processing_with_progress": "Processing {progress}%",
+    "processing_failed": "Processing Failed",
+    "waiting": "Waiting",
+    "processing_tasks_count": "Processing {count} tasks...",
+    "please_upload_first": "Please upload an image first",
+    "please_select_colors_first": "Please select colors",
+    "start_with_colors": "Start transformation with {count} colors ✨"
   }
 }

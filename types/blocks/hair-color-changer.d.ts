@@ -2,17 +2,15 @@ import { Button } from '@/types/blocks/base';
 
 export interface HairColorOption {
   /** 颜色唯一编码 */
-  code: string;
+  id: string;
   /** 颜色名称 */
   name: string;
   /** 颜色描述 */
-  description: string;
-  /** 颜色预览值 (用于UI显示) */
-  previewColor: string;
-  /** 示例图片 URL，展示该颜色效果 */
-  demoImageUrl?: string;
-  /** 颜色类型 (natural: 自然色, fashion: 时尚色) */
-  type: 'natural' | 'fashion';
+  description?: string;
+  /** 颜色参考图片URL */
+  imageUrl: string;
+  /** 颜色类型 (natural: 自然色, fashion: 时尚色, trendy: 潮流色, bright: 亮色) */
+  category: 'natural' | 'fashion' | 'trendy' | 'bright';
   /** 是否为热门颜色 */
   isPopular?: boolean;
 }
@@ -45,6 +43,44 @@ export interface ProcessingStatus {
   startTime?: number;
   /** 预计处理时间(秒) */
   expectedDuration?: number;
+}
+
+export interface ColorTask {
+  /** 任务ID */
+  userMediaRecordId: string | null;
+  /** 预计执行时间 */
+  exeTime: number;
+  /** 颜色参考图片URL */
+  pickcolorUrl: string;
+  /** 任务索引 */
+  index: number;
+  /** 任务是否成功创建 */
+  success: boolean;
+  /** 错误信息(如果失败) */
+  error?: string;
+  /** 任务状态 */
+  status?: 'pending' | 'processing' | 'completed' | 'failed';
+  /** 任务进度 0-100 */
+  progress?: number;
+  /** 结果图片URLs */
+  resultUrls?: string[];
+}
+
+export interface BatchProcessingStatus {
+  /** 整体状态 */
+  status: 'idle' | 'uploading' | 'processing' | 'completed' | 'failed';
+  /** 所有任务 */
+  tasks: ColorTask[];
+  /** 总任务数 */
+  totalTasks: number;
+  /** 成功创建的任务数 */
+  successfulTasks: number;
+  /** 失败的任务数 */
+  failedTasks: number;
+  /** 已完成的任务数 */
+  completedTasks?: number;
+  /** 处理开始时间 */
+  startTime?: number;
 }
 
 export interface ConnectionStatus {

@@ -69,7 +69,7 @@ export function useMediaSSE(options: UseMediaSseOptions = {}): UseMediaSseResult
   const { user } = useUser();
   const [connected, setConnected] = useState(false);
   const [taskStatuses, setTaskStatuses] = useState<Record<string, TaskStatus>>({});
-  
+
   const eventSourceRef = useRef<EventSource | null>(null);
   const reconnectTimerRef = useRef<NodeJS.Timeout | null>(null);
   const subscribedTasksRef = useRef<Set<string>>(new Set());
@@ -78,7 +78,7 @@ export function useMediaSSE(options: UseMediaSseOptions = {}): UseMediaSseResult
   // 获取浏览器ID
   const getBrowserId = useCallback(() => {
     if (typeof window === 'undefined') return '';
-    
+
     let browserId = localStorage.getItem('browser-id');
     if (!browserId) {
       browserId = `browser_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -91,7 +91,7 @@ export function useMediaSSE(options: UseMediaSseOptions = {}): UseMediaSseResult
   const handleMessage = useCallback((event: MessageEvent) => {
     try {
       const message: SseMessage = JSON.parse(event.data);
-      
+
       if (message.type === 'ping') {
         // 心跳消息，仅用于保持连接
         return;
@@ -145,19 +145,19 @@ export function useMediaSSE(options: UseMediaSseOptions = {}): UseMediaSseResult
       const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || '';
       const subscribedTasks = Array.from(subscribedTasksRef.current);
       const params = new URLSearchParams();
-      
+
       if (subscribedTasks.length > 0) {
         params.set('taskIds', subscribedTasks.join(','));
       }
 
       // 如果用户未登录，通过查询参数传递browserId
       const browserId = getBrowserId();
-      if (!user?.id && browserId) {
+      if (!user?.uuid && browserId) {
         params.set('browserId', browserId);
       }
 
       const url = `${baseUrl}/sse/media-progress${params.toString() ? `?${params.toString()}` : ''}`;
-      
+
       const eventSource = new EventSource(url, {
         withCredentials: true,
       });
@@ -166,7 +166,7 @@ export function useMediaSSE(options: UseMediaSseOptions = {}): UseMediaSseResult
         console.log('SSE连接已建立');
         setConnected(true);
         onConnectionChange?.(true);
-        
+
         // 清除重连定时器
         if (reconnectTimerRef.current) {
           clearTimeout(reconnectTimerRef.current);
@@ -184,7 +184,7 @@ export function useMediaSSE(options: UseMediaSseOptions = {}): UseMediaSseResult
         console.error('SSE连接错误:', error);
         setConnected(false);
         onConnectionChange?.(false);
-        
+
         // 关闭当前连接
         if (eventSourceRef.current) {
           eventSourceRef.current.close();
@@ -208,7 +208,7 @@ export function useMediaSSE(options: UseMediaSseOptions = {}): UseMediaSseResult
       setConnected(false);
       onConnectionChange?.(false);
     }
-  }, [handleMessage, getBrowserId, autoReconnect, reconnectInterval, onConnectionChange, user?.id]);
+  }, [handleMessage, getBrowserId, autoReconnect, reconnectInterval, onConnectionChange, user?.uuid]);
 
   // 断开连接
   const disconnect = useCallback(() => {
@@ -216,16 +216,15 @@ export function useMediaSSE(options: UseMediaSseOptions = {}): UseMediaSseResult
       eventSourceRef.current.close();
       eventSourceRef.current = null;
     }
-    
+
     if (reconnectTimerRef.current) {
       clearTimeout(reconnectTimerRef.current);
       reconnectTimerRef.current = null;
     }
-    
+
     setConnected(false);
-    onConnectionChange?.(false);
     console.log('SSE连接已断开');
-  }, [onConnectionChange]);
+  }, []);
 
   // 重连
   const reconnect = useCallback(() => {
@@ -236,7 +235,7 @@ export function useMediaSSE(options: UseMediaSseOptions = {}): UseMediaSseResult
   // 订阅任务
   const subscribeToTask = useCallback((taskId: string) => {
     subscribedTasksRef.current.add(taskId);
-    
+
     // 如果已连接，需要重新连接以更新订阅
     if (connected) {
       reconnect();
@@ -246,14 +245,14 @@ export function useMediaSSE(options: UseMediaSseOptions = {}): UseMediaSseResult
   // 取消订阅任务
   const unsubscribeFromTask = useCallback((taskId: string) => {
     subscribedTasksRef.current.delete(taskId);
-    
+
     // 清理任务状态
     setTaskStatuses(prev => {
       const newStatuses = { ...prev };
       delete newStatuses[taskId];
       return newStatuses;
     });
-    
+
     // 如果已连接且没有其他订阅，可以考虑断开连接
     if (connected && subscribedTasksRef.current.size === 0) {
       // disconnect(); // 可选：没有订阅时断开连接
@@ -275,9 +274,17 @@ export function useMediaSSE(options: UseMediaSseOptions = {}): UseMediaSseResult
 
     return () => {
       mountedRef.current = false;
-      disconnect();
+      if (eventSourceRef.current) {
+        eventSourceRef.current.close();
+        eventSourceRef.current = null;
+      }
+      if (reconnectTimerRef.current) {
+        clearTimeout(reconnectTimerRef.current);
+        reconnectTimerRef.current = null;
+      }
+      setConnected(false);
     };
-  }, [connect, disconnect]);
+  }, []);
 
   return {
     connected,

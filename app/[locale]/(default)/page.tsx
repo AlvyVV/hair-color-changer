@@ -15,4 +15,3 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   return <HomePageClient />;
 }
 
-// This content has been moved to HomePageClient component

@@ -1,11 +1,13 @@
 import '@/app/globals.css';
 
-import {Lora as FontSerif, Plus_Jakarta_Sans as FontSans, Roboto_Mono as FontMono} from 'next/font/google';
+import {Lora as FontSerif, Libre_Baskerville as FontSans, Roboto_Mono as FontMono} from 'next/font/google';
 import {cn} from '@/lib/utils';
 
 const fontSans = FontSans({
     subsets: ['latin'],
     variable: '--font-sans',
+    weight: ['400', '700'],
+    style: ['normal', 'italic'],
     display: 'swap', // 优化字体加载
     preload: true,   // 预加载关键字体
 });

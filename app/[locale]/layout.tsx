@@ -4,7 +4,7 @@ import { getMessages, getTranslations } from 'next-intl/server';
 import { locales } from '@/i18n/locale';
 
 import { AppContextProvider } from '@/contexts/app';
-import { Inter as FontSans } from 'next/font/google';
+import { Libre_Baskerville as FontSans } from 'next/font/google';
 import { Metadata } from 'next';
 import { NextIntlClientProvider } from 'next-intl';
 import { ThemeProvider } from '@/providers/theme';
@@ -13,6 +13,8 @@ import { cn } from '@/lib/utils';
 const fontSans = FontSans({
   subsets: ['latin'],
   variable: '--font-sans',
+  weight: ['400', '700'],
+  style: ['normal', 'italic'],
 });
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {

@@ -33,7 +33,9 @@
       "mcp__mcp-magic-ui__getSpecialEffects",
       "Bash(pnpm dlx shadcn:*)",
       "Bash(pnpm run:*)",
-      "mcp__mcp-magic-ui__getButtons"
+      "mcp__mcp-magic-ui__getButtons",
+      "Bash(npm run lint)",
+      "mcp__mcp-magic-ui__getComponents"
     ],
     "deny": []
   }

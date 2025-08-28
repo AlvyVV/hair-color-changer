@@ -207,11 +207,12 @@ class ApiClient {
     delete (config as any).includeAuth;
 
     try {
+      console.log('Making request to:', url, 'with config:', config);
       const response = await fetch(url, config);
       return response;
     } catch (error) {
-      console.error('API request failed:', error);
-      throw error;
+      console.error('API request failed for URL:', url, 'Error:', error);
+      throw new Error(`Network request failed for ${url}: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
 

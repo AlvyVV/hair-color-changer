@@ -9,12 +9,10 @@ export const defaultHairColorChangerConfig: HairColorChanger = {
     title: "Upload Your Photo",
     description: "Choose a clear photo where your hair is visible for the best results",
     uploadButton: {
-      title: "Upload Image",
-      description: "Choose from your device"
+      title: "Upload Image"
     },
     mobileButton: {
-      title: "Upload From Mobile", 
-      description: "Take or choose from mobile"
+      title: "Upload From Mobile"
     },
     dragText: "Drag and drop your image here",
     supportedFormats: "Supports JPG, PNG, WEBP (Max 10MB)"
@@ -38,16 +36,13 @@ export const defaultHairColorChangerConfig: HairColorChanger = {
   resultSection: {
     title: "Amazing Results!",
     downloadButton: {
-      title: "Download Result",
-      description: "Save your new look"
+      title: "Download Result"
     },
     shareButton: {
-      title: "Share Result",
-      description: "Share on social media"
+      title: "Share Result"
     },
     retryButton: {
-      title: "Try Another Color",
-      description: "Experiment with different colors"
+      title: "Try Another Color"
     },
     processingMessage: {
       title: "Creating Your New Look...",

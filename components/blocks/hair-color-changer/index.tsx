@@ -1,66 +1,52 @@
 'use client';
 
 import React, { useState, useRef, useCallback, useEffect } from 'react';
-import type { HairColorChanger, HairColorOption, ProcessingStatus, ConnectionStatus } from '@/types/blocks/hair-color-changer';
+import type { HairColorOption, ProcessingStatus, BatchProcessingStatus, ColorTask } from '@/types/blocks/hair-color-changer';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
+import { AnimatedCircularProgressBar } from '@/components/ui/animated-circular-progress-bar';
 import Icon from '@/components/icon';
 import { cn } from '@/lib/utils';
 import { uploadFile } from '@/lib/upload-file';
 import { apiClient } from '@/lib/api-client';
 import { useUser, useModal } from '@/contexts/app';
 import { getProgress } from '@/lib/progress';
-import { useMediaSSE } from '@/hooks/use-media-sse';
-import Loader from '@/components/ui/loader';
+import { useTranslations } from 'next-intl';
+import { ResultGrid } from './result-carousel';
 
-// Default hair color options
-const DEFAULT_HAIR_COLORS = {
-  natural: [
-    { code: 'natural_blonde', name: 'Blonde', previewColor: '#F5DEB3', type: 'natural' as const, isPopular: true },
-    { code: 'natural_brown', name: 'Brown', previewColor: '#8B4513', type: 'natural' as const, isPopular: true },
-    { code: 'natural_black', name: 'Black', previewColor: '#2F2F2F', type: 'natural' as const, isPopular: true },
-    { code: 'natural_auburn', name: 'Auburn', previewColor: '#A52A2A', type: 'natural' as const, isPopular: false },
-    { code: 'natural_chestnut', name: 'Chestnut', previewColor: '#954535', type: 'natural' as const, isPopular: false },
-    { code: 'natural_honey', name: 'Honey', previewColor: '#DAA520', type: 'natural' as const, isPopular: false },
-    { code: 'natural_ash_brown', name: 'Ash Brown', previewColor: '#6F5E57', type: 'natural' as const, isPopular: false },
-    { code: 'natural_dark_blonde', name: 'Dark Blonde', previewColor: '#B8860B', type: 'natural' as const, isPopular: false },
-  ],
-  fashion: [
-    { code: 'fashion_rose_gold', name: 'Rose Gold', previewColor: '#E8B4B8', type: 'fashion' as const, isPopular: true },
-    { code: 'fashion_purple', name: 'Purple', previewColor: '#9370DB', type: 'fashion' as const, isPopular: true },
-    { code: 'fashion_pink', name: 'Pink', previewColor: '#FFB6C1', type: 'fashion' as const, isPopular: true },
-    { code: 'fashion_blue', name: 'Blue', previewColor: '#4169E1', type: 'fashion' as const, isPopular: false },
-    { code: 'fashion_green', name: 'Green', previewColor: '#228B22', type: 'fashion' as const, isPopular: false },
-    { code: 'fashion_silver', name: 'Silver', previewColor: '#C0C0C0', type: 'fashion' as const, isPopular: false },
-    { code: 'fashion_turquoise', name: 'Turquoise', previewColor: '#40E0D0', type: 'fashion' as const, isPopular: false },
-    { code: 'fashion_coral', name: 'Coral', previewColor: '#FF7F50', type: 'fashion' as const, isPopular: false },
-  ]
-};
 
-export default function HairColorChangerBlock({ hairColorChanger }: { hairColorChanger: HairColorChanger }) {
+export default function HairColorChangerBlock() {
+  const t = useTranslations('hair_color_changer');
+  
   // 基础状态
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
-  const [selectedColor, setSelectedColor] = useState<string | null>(null);
-  const [processedImage, setProcessedImage] = useState<string | null>(null);
+  const [selectedColors, setSelectedColors] = useState<string[]>([]);
+  const [processedImages, setProcessedImages] = useState<{[taskId: string]: string}>({});
   const [isDragOver, setIsDragOver] = useState(false);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [pendingGenerate, setPendingGenerate] = useState<boolean>(false);
   
-  // 处理状态管理
-  const [processingStatus, setProcessingStatus] = useState<ProcessingStatus>({
+  // 颜色选项状态
+  const [hairColorOptions, setHairColorOptions] = useState<HairColorOption[]>([]);
+  const [loadingColors, setLoadingColors] = useState<boolean>(true);
+  
+  // 进度条状态
+  const [taskProgressMap, setTaskProgressMap] = useState<{[taskId: string]: number}>({});
+  
+  // 批量处理状态管理
+  const [batchProcessingStatus, setBatchProcessingStatus] = useState<BatchProcessingStatus>({
     status: 'idle',
-    progress: 0,
+    tasks: [],
+    totalTasks: 0,
+    successfulTasks: 0,
+    failedTasks: 0,
   });
   
-  // 连接状态管理
-  const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>({
-    sseConnected: false,
-    isPolling: false,
-    retryCount: 0,
-  });
+  // 轮询状态管理
+  const [isPolling, setIsPolling] = useState<boolean>(false);
 
   // Refs
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -71,68 +57,24 @@ export default function HairColorChangerBlock({ hairColorChanger }: { hairColorC
   const { user } = useUser();
   const { setShowSignModal } = useModal();
 
-  // SSE Hook 配置
-  const {
-    connected: sseConnected,
-    taskStatuses,
-    subscribeToTask,
-    unsubscribeFromTask,
-    disconnect: disconnectSSE,
-    reconnect: reconnectSSE,
-  } = useMediaSSE({
-    onProgress: (taskId, status) => {
-      console.log('SSE Progress:', taskId, status);
-      setProcessingStatus(prev => ({
-        ...prev,
-        status: 'processing',
-        progress: status.progress,
-        message: status.message,
-      }));
-    },
-    onCompleted: (taskId, status) => {
-      console.log('SSE Completed:', taskId, status);
-      setProcessingStatus(prev => ({
-        ...prev,
-        status: 'completed',
-        progress: 100,
-        resultUrls: status.resultUrls,
-      }));
-      if (status.resultUrls && status.resultUrls.length > 0) {
-        setProcessedImage(status.resultUrls[0]);
-      }
-      // 清理定时器
-      clearTimers();
-    },
-    onFailed: (taskId, status) => {
-      console.log('SSE Failed:', taskId, status);
-      setProcessingStatus(prev => ({
-        ...prev,
-        status: 'failed',
-        error: status.error || 'Processing failed',
-      }));
-      // 清理定时器
-      clearTimers();
-    },
-    onConnectionChange: (connected) => {
-      setConnectionStatus(prev => ({
-        ...prev,
-        sseConnected: connected,
-        lastConnectedAt: connected ? Date.now() : prev.lastConnectedAt,
-        retryCount: connected ? 0 : prev.retryCount + 1,
-      }));
-      
-      // SSE断开时启动轮询备份
-      if (!connected && processingStatus.status === 'processing' && processingStatus.taskId) {
-        startPollingBackup();
-      }
-    },
-    autoReconnect: true,
-    reconnectInterval: 3000,
-  });
 
-  if (hairColorChanger.disabled) {
-    return null;
-  }
+
+  // 加载颜色选项
+  useEffect(() => {
+    const loadHairColors = async () => {
+      try {
+        const response = await fetch('/hair-colors.json');
+        const colors = await response.json();
+        setHairColorOptions(colors);
+      } catch (error) {
+        console.error('Failed to load hair colors:', error);
+      } finally {
+        setLoadingColors(false);
+      }
+    };
+
+    loadHairColors();
+  }, []);
 
   // 清理所有定时器
   const clearTimers = useCallback(() => {
@@ -144,7 +86,7 @@ export default function HairColorChangerBlock({ hairColorChanger }: { hairColorC
       clearInterval(pollingTimerRef.current);
       pollingTimerRef.current = null;
     }
-    setConnectionStatus(prev => ({ ...prev, isPolling: false }));
+    setIsPolling(false);
   }, []);
 
   // 文件选择处理
@@ -152,7 +94,7 @@ export default function HairColorChangerBlock({ hairColorChanger }: { hairColorC
     if (!file) return;
 
     // 验证文件类型和大小
-    const maxSize = hairColorChanger.maxFileSize || 10 * 1024 * 1024; // 10MB
+    const maxSize = 10 * 1024 * 1024; // 10MB
     if (file.size > maxSize) {
       console.error('File too large');
       return;
@@ -161,33 +103,40 @@ export default function HairColorChangerBlock({ hairColorChanger }: { hairColorC
     // 本地预览
     const previewUrl = URL.createObjectURL(file);
     setUploadedImage(previewUrl);
-    setProcessedImage(null);
+    setProcessedImages({});
     
     // 设置上传状态
-    setProcessingStatus({
+    setBatchProcessingStatus({
       status: 'uploading',
-      progress: 0,
+      tasks: [],
+      totalTasks: 0,
+      successfulTasks: 0,
+      failedTasks: 0,
     });
 
     try {
       const remote = await uploadFile(file);
-      console.log('File uploaded:', remote);
       setImageUrl(remote.url);
       
       // 上传完成
-      setProcessingStatus({
+      setBatchProcessingStatus({
         status: 'idle',
-        progress: 0,
+        tasks: [],
+        totalTasks: 0,
+        successfulTasks: 0,
+        failedTasks: 0,
       });
     } catch (err) {
       console.error('File upload failed:', err);
-      setProcessingStatus({
+      setBatchProcessingStatus({
         status: 'failed',
-        progress: 0,
-        error: 'Upload failed',
+        tasks: [],
+        totalTasks: 0,
+        successfulTasks: 0,
+        failedTasks: 0,
       });
     }
-  }, [hairColorChanger.maxFileSize]);
+  }, []);
 
   // 文件上传事件
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -203,18 +152,18 @@ export default function HairColorChangerBlock({ hairColorChanger }: { hairColorC
   // 移除图片
   const handleRemoveImage = () => {
     setUploadedImage(null);
-    setProcessedImage(null);
-    setSelectedColor(null);
+    setProcessedImages({});
+    setSelectedColors([]);
     setImageUrl(null);
-    setProcessingStatus({
+    setBatchProcessingStatus({
       status: 'idle',
-      progress: 0,
+      tasks: [],
+      totalTasks: 0,
+      successfulTasks: 0,
+      failedTasks: 0,
     });
     
-    // 清理任务相关状态
-    if (processingStatus.taskId) {
-      unsubscribeFromTask(processingStatus.taskId);
-    }
+    // 清理定时器
     clearTimers();
     
     if (fileInputRef.current) {
@@ -223,139 +172,293 @@ export default function HairColorChangerBlock({ hairColorChanger }: { hairColorC
   };
 
   // 轮询备份机制
-  const startPollingBackup = useCallback(() => {
-    if (!processingStatus.taskId) return;
+  const startPollingBackup = useCallback((delayMs: number = 0, forcedTasks?: ColorTask[]) => {
+    // 防止重复启动轮询
+    if (isPolling && delayMs === 0) {
+      console.log('轮询已在进行中，跳过重复启动');
+      return;
+    }
     
-    setConnectionStatus(prev => ({ ...prev, isPolling: true }));
+    // 使用传入的任务或当前状态中的任务
+    const currentTasks = forcedTasks || batchProcessingStatus.tasks;
     
-    const pollTaskStatus = async () => {
-      try {
-        const response = await apiClient.get(`/api/task-status/${processingStatus.taskId}`);
-        const { data } = response;
-        
-        if (data.isCompleted) {
-          setProcessingStatus(prev => ({
-            ...prev,
-            status: 'completed',
-            progress: 100,
-            resultUrls: data.resultUrls,
-          }));
-          if (data.resultUrls && data.resultUrls.length > 0) {
-            setProcessedImage(data.resultUrls[0]);
+    console.log('检查轮询任务，当前任务数:', currentTasks.length);
+    console.log('当前任务详情:', currentTasks);
+    
+    const processingTasks = currentTasks.filter(task => {
+      const hasId = !!task.userMediaRecordId;
+      const isSuccess = !!task.success;
+      const isProcessing = task.status === 'pending' || task.status === 'processing';
+      
+      console.log(`任务 ${task.index}: userMediaRecordId=${hasId}, success=${isSuccess}, status=${task.status}, isProcessing=${isProcessing}`);
+      
+      return hasId && isSuccess && isProcessing;
+    });
+    
+    if (processingTasks.length === 0) {
+      console.log('没有需要轮询的任务，过滤后任务数:', processingTasks.length);
+      console.log('所有任务状态:', currentTasks.map(t => `任务${t.index}: status=${t.status}, success=${t.success}, id=${!!t.userMediaRecordId}`));
+      return;
+    }
+    
+    console.log(`将在 ${delayMs}ms 后启动轮询备份，检查 ${processingTasks.length} 个任务`);
+    
+    // 如果有延迟，先等待
+    const startPolling = () => {
+      console.log('=== 开始启动轮询 ===');
+      setIsPolling(true);
+      
+      const pollTaskStatus = async () => {
+        console.log('=== 轮询函数执行 ===');
+        try {
+          // 优先使用传入的任务列表，如果没有或为空则从state获取最新状态
+          let currentTasks: ColorTask[] = [];
+          if (forcedTasks && forcedTasks.length > 0) {
+            console.log('使用传入的任务列表 (forcedTasks)，任务数:', forcedTasks.length);
+            currentTasks = [...forcedTasks]; // 复制一份，避免引用问题
+          } else {
+            console.log('从state获取最新任务列表');
+            // 使用 Promise 来确保获取到最新状态
+            await new Promise<void>((resolve) => {
+              setBatchProcessingStatus(prev => {
+                currentTasks = [...prev.tasks]; // 复制一份
+                console.log('从state获取到的任务数:', prev.tasks.length);
+                resolve();
+                return prev;
+              });
+            });
           }
-          clearTimers();
-          return;
+          
+          console.log('轮询中检查任务，当前任务数:', currentTasks.length);
+          
+          const currentProcessingTasks = currentTasks.filter(task => {
+            const hasId = !!task.userMediaRecordId;
+            const isSuccess = !!task.success;
+            const isProcessing = task.status === 'pending' || task.status === 'processing';
+            
+            console.log(`轮询任务 ${task.index}: userMediaRecordId=${hasId}, success=${isSuccess}, status=${task.status}`);
+            
+            return hasId && isSuccess && isProcessing;
+          });
+          
+          if (currentProcessingTasks.length === 0) {
+            console.log('轮询中：所有任务都已完成或失败，停止轮询');
+            console.log('当前所有任务状态:', currentTasks.map(t => `任务${t.index}: status=${t.status}, success=${t.success}`));
+            if (pollingTimerRef.current) {
+              clearInterval(pollingTimerRef.current);
+              pollingTimerRef.current = null;
+              setIsPolling(false);
+            }
+            return;
+          }
+          
+          console.log('开始轮询任务状态，任务数量:', currentProcessingTasks.length);
+          console.log('准备轮询的任务列表:', currentProcessingTasks.map(t => ({ id: t.userMediaRecordId, index: t.index })));
+          
+          const taskPromises = currentProcessingTasks.map(async (task) => {
+            console.log(`=== 开始处理任务 ${task.index}, ID: ${task.userMediaRecordId} ===`);
+            if (!task.userMediaRecordId) {
+              console.log('任务没有userMediaRecordId，跳过');
+              return;
+            }
+            
+            try {
+              console.log('准备调用API:', `/api/task-status/${task.userMediaRecordId}`);
+              const response = await apiClient.get(`/api/task-status/${task.userMediaRecordId}`);
+              const { data } = response;
+              console.log('API调用成功，响应数据:', task.userMediaRecordId, data);
+              
+              if (data.isCompleted) {
+                console.log('轮询检测到任务完成:', task.userMediaRecordId, data);
+                setBatchProcessingStatus(prev => {
+                  const updatedTasks = prev.tasks.map(t => 
+                    t.userMediaRecordId === task.userMediaRecordId
+                      ? { ...t, status: 'completed' as const, progress: 100, resultUrls: data.resultUrls }
+                      : t
+                  );
+                  
+                  const completedTasks = updatedTasks.filter(task => task.status === 'completed').length;
+                  const allCompleted = completedTasks === prev.totalTasks;
+                  
+                  return {
+                    ...prev,
+                    tasks: updatedTasks,
+                    completedTasks,
+                    status: allCompleted ? 'completed' : prev.status,
+                  };
+                });
+                
+                if (data.resultUrls && data.resultUrls.length > 0) {
+                  setProcessedImages(prev => ({ ...prev, [task.userMediaRecordId!]: data.resultUrls[0] }));
+                }
+                return;
+              }
+              
+              if (data.isFailed) {
+                setBatchProcessingStatus(prev => {
+                  const updatedTasks = prev.tasks.map(t => 
+                    t.userMediaRecordId === task.userMediaRecordId
+                      ? { ...t, status: 'failed' as const, error: data.error || 'Processing failed' }
+                      : t
+                  );
+                  
+                  const completedTasks = updatedTasks.filter(task => task.status === 'completed').length;
+                  const failedTasks = updatedTasks.filter(task => task.status === 'failed').length;
+                  const allDone = (completedTasks + failedTasks) === prev.totalTasks;
+                  
+                  return {
+                    ...prev,
+                    tasks: updatedTasks,
+                    completedTasks,
+                    failedTasks,
+                    status: allDone ? 'completed' : prev.status,
+                  };
+                });
+                return;
+              }
+              
+              // 更新进度
+              setBatchProcessingStatus(prev => ({
+                ...prev,
+                tasks: prev.tasks.map(t => 
+                  t.userMediaRecordId === task.userMediaRecordId
+                    ? { ...t, progress: data.progress || t.progress }
+                    : t
+                ),
+              }));
+            } catch (error) {
+              console.error(`=== API调用失败，任务 ${task.userMediaRecordId} ===`);
+              console.error('错误详情:', error);
+              console.error('错误类型:', typeof error);
+              console.error('错误消息:', error instanceof Error ? error.message : 'Unknown error');
+            }
+          });
+
+          console.log('=== 等待所有任务轮询完成 ===');
+          await Promise.all(taskPromises);
+          console.log('=== 本轮轮询完成 ===');
+        } catch (error) {
+          console.error('=== 批量轮询过程出错 ===');
+          console.error('Batch polling failed:', error);
         }
-        
-        if (data.isFailed) {
-          setProcessingStatus(prev => ({
-            ...prev,
-            status: 'failed',
-            error: data.error || 'Processing failed',
-          }));
-          clearTimers();
-          return;
+      };
+
+      // 立即执行一次，然后每2秒轮询一次
+      console.log('=== 立即执行第一次轮询 ===');
+      pollTaskStatus();
+      console.log('=== 设置定时器，每2秒轮询 ===');
+      pollingTimerRef.current = setInterval(pollTaskStatus, 2000);
+
+      // 最多轮询50次(100秒)后停止
+      setTimeout(() => {
+        if (pollingTimerRef.current) {
+          clearInterval(pollingTimerRef.current);
+          pollingTimerRef.current = null;
+          setIsPolling(false);
         }
-        
-        // 更新进度
-        setProcessingStatus(prev => ({
-          ...prev,
-          progress: data.progress || prev.progress,
-        }));
-      } catch (error) {
-        console.error('Polling failed:', error);
-      }
+      }, 100000);
     };
 
-    // 立即执行一次，然后每5秒轮询一次
-    pollTaskStatus();
-    pollingTimerRef.current = setInterval(pollTaskStatus, 5000);
-
-    // 最多轮询20次(100秒)后停止
-    setTimeout(() => {
-      if (pollingTimerRef.current) {
-        clearInterval(pollingTimerRef.current);
-        pollingTimerRef.current = null;
-        setConnectionStatus(prev => ({ ...prev, isPolling: false }));
-      }
-    }, 100000);
-  }, [processingStatus.taskId]);
+    if (delayMs > 0) {
+      console.log(`延迟 ${delayMs}ms 后开始轮询`);
+      setTimeout(startPolling, delayMs);
+    } else {
+      startPolling();
+    }
+  }, [batchProcessingStatus.tasks, isPolling]);
 
   // 开始处理
   const doGenerate = async () => {
-    if (!uploadedImage || !imageUrl || !selectedColor) return;
+    if (!uploadedImage || !imageUrl || selectedColors.length === 0) return;
 
     try {
+      // 将选中的颜色ID映射为对应的颜色图片URL
+      const pickcolorUrls = selectedColors.map(colorId => {
+        const colorOption = hairColorOptions.find(c => c.id === colorId);
+        if (!colorOption) {
+          throw new Error(`Color option not found: ${colorId}`);
+        }
+        // 返回完整的URL路径
+        return `${window.location.origin}${colorOption.imageUrl}`;
+      });
+
       const payload = {
-        code: selectedColor,
-        imageUrl,
+        userImageUrl: imageUrl,
+        pickcolorUrls,
       };
 
       const resp = await apiClient.post<{
         code: number;
         message: string;
         data: {
-          userMediaRecordId: string;
-          exeTime: number;
+          tasks: ColorTask[];
+          totalTasks: number;
+          successfulTasks: number;
+          failedTasks: number;
         };
       }>('/api/hair-color-changer', payload);
 
-      const { userMediaRecordId, exeTime } = resp.data || ({} as any);
+      const batchResult = resp.data || {} as any;
 
-      if (userMediaRecordId) {
-        const newStatus: ProcessingStatus = {
-          status: 'processing',
+      if (batchResult.tasks && batchResult.tasks.length > 0) {
+        // 为每个任务设置初始状态
+        const tasksWithStatus = batchResult.tasks.map((task: ColorTask) => ({
+          ...task,
+          status: task.success ? 'pending' as const : 'failed' as const,
           progress: 0,
-          taskId: userMediaRecordId,
+        }));
+        
+        console.log('创建任务完成，任务列表:', tasksWithStatus);
+
+        const newBatchStatus: BatchProcessingStatus = {
+          status: 'processing',
+          tasks: tasksWithStatus,
+          totalTasks: batchResult.totalTasks,
+          successfulTasks: batchResult.successfulTasks,
+          failedTasks: batchResult.failedTasks,
+          completedTasks: 0,
           startTime: Date.now(),
-          expectedDuration: exeTime || hairColorChanger.processingConfig?.defaultDuration || 30,
         };
         
-        setProcessingStatus(newStatus);
+        setBatchProcessingStatus(newBatchStatus);
         
-        // 订阅SSE任务
-        subscribeToTask(userMediaRecordId);
+        // 获取预期时间（所有任务应该有相同的预期时间，取第一个任务的预期时间）
+        const expectedTime = tasksWithStatus[0]?.exeTime || 30;
+        console.log('任务预期完成时间:', expectedTime, '秒');
         
-        // 启动进度估算定时器
-        startProgressTimer(newStatus);
+        // 在预期时间后开始轮询检查
+        setTimeout(() => {
+          console.log('达到预期时间，开始轮询检查任务状态');
+          startPollingBackup(0, tasksWithStatus);
+        }, expectedTime * 1000);
         
-        console.log('Task created:', userMediaRecordId);
+        // 设置超时机制，90秒后将未完成的任务标记为失败
+        setTimeout(() => {
+          console.log('任务超时检查，标记长时间未完成的任务为失败');
+          setBatchProcessingStatus(prev => ({
+            ...prev,
+            tasks: prev.tasks.map(task => 
+              (task.status === 'pending' || task.status === 'processing') 
+                ? { ...task, status: 'failed' as const, error: 'Task timeout - processing took too long' }
+                : task
+            ),
+          }));
+        }, 90000); // 90秒超时
+        
+        console.log('Batch tasks created:', tasksWithStatus.length);
       }
     } catch (e) {
-      console.error('Failed to create task:', e);
-      setProcessingStatus({
+      console.error('Failed to create batch tasks:', e);
+      setBatchProcessingStatus(prev => ({
+        ...prev,
         status: 'failed',
-        progress: 0,
-        error: 'Failed to start processing',
-      });
+      }));
     }
-  };
-
-  // 启动进度定时器
-  const startProgressTimer = (status: ProcessingStatus) => {
-    if (progressTimerRef.current) {
-      clearInterval(progressTimerRef.current);
-    }
-
-    const expectedSeconds = status.expectedDuration || 30;
-    progressTimerRef.current = setInterval(() => {
-      setProcessingStatus(prev => {
-        if (prev.status !== 'processing' || !prev.taskId) {
-          return prev;
-        }
-        
-        const newProgress = getProgress(expectedSeconds, prev.taskId, prev.progress);
-        return {
-          ...prev,
-          progress: newProgress,
-        };
-      });
-    }, 1000);
   };
 
   // 处理生成请求
   const handleGenerate = async () => {
-    if (!uploadedImage || !imageUrl || !selectedColor) return;
+    if (!uploadedImage || !imageUrl || selectedColors.length === 0) return;
 
     if (!user) {
       setPendingGenerate(true);
@@ -375,17 +478,18 @@ export default function HairColorChangerBlock({ hairColorChanger }: { hairColorC
   }, [user, pendingGenerate]);
 
   // 下载结果图片
-  const handleDownload = async () => {
-    if (!processedImage) return;
+  const handleDownload = async (task: ColorTask, taskIndex: number) => {
+    const resultUrl = task.resultUrls?.[0];
+    if (!resultUrl) return;
 
     try {
-      const res = await fetch(processedImage, { mode: 'cors' });
+      const res = await fetch(resultUrl, { mode: 'cors' });
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
 
       const link = document.createElement('a');
       link.href = url;
-      link.download = `hair-color-${selectedColor || 'changed'}.jpg`;
+      link.download = `hair-color-result-${taskIndex + 1}.jpg`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -393,364 +497,302 @@ export default function HairColorChangerBlock({ hairColorChanger }: { hairColorC
       URL.revokeObjectURL(url);
     } catch (err) {
       console.error('Download failed:', err);
-      window.open(processedImage, '_blank');
+      window.open(resultUrl, '_blank');
     }
   };
+
+  // 监听处理状态变化，智能启动轮询
+  useEffect(() => {
+    if (batchProcessingStatus.status !== 'processing' || !batchProcessingStatus.startTime) return;
+
+    const timeElapsed = Date.now() - batchProcessingStatus.startTime;
+    const processingTasks = batchProcessingStatus.tasks.filter(
+      task => task.status === 'pending' || task.status === 'processing'
+    );
+
+    if (processingTasks.length === 0) return;
+
+    // 获取预期时间（所有任务应该有相同的预期时间）
+    const expectedTime = processingTasks[0]?.exeTime || 30;
+    const expectedTimeMs = expectedTime * 1000;
+    
+    // 如果已经超过预期时间且还没开始轮询，立即开始
+    if (timeElapsed >= expectedTimeMs && !isPolling) {
+      console.log('任务超过预期时间且未在轮询，立即开始轮询检查');
+      startPollingBackup();
+    }
+  }, [batchProcessingStatus.status, batchProcessingStatus.startTime, batchProcessingStatus.tasks, isPolling, startPollingBackup]);
 
   // 组件卸载时清理
   useEffect(() => {
     return () => {
       clearTimers();
-      if (processingStatus.taskId) {
-        unsubscribeFromTask(processingStatus.taskId);
-      }
     };
-  }, []);
+  }, [clearTimers]);
 
   return (
-    <section id={hairColorChanger.name} className="w-full py-16">
+    <section id="hair-color-changer" className="w-full py-8">
       <div className="container mx-auto space-y-8">
-        {/* Header */}
-        <div className="text-center space-y-4">
-          <div className="flex items-center justify-center gap-2">
-            <Icon name="RiPaletteLine" className="h-8 w-8 text-primary" />
-            <h1 className="text-4xl font-bold text-primary">{hairColorChanger.title}</h1>
-          </div>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">{hairColorChanger.description}</p>
-        </div>
 
         {/* Main Content */}
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 max-w-7xl mx-auto">
-          {/* Left Side - Image Comparison (3 columns) */}
-          <div className="lg:col-span-3 space-y-4">
-            <h3 className="text-xl font-semibold text-center">
-              {hairColorChanger.comparisonSection?.title || 'Before & After'}
-            </h3>
-            
-            {!uploadedImage ? (
-              <Card className="border-dashed border-2 border-muted-foreground/25 h-96">
-                <CardContent className="h-full flex items-center justify-center p-8">
-                  <div className="text-center space-y-4">
-                    <div className="mx-auto w-16 h-16 bg-muted rounded-full flex items-center justify-center">
-                      <Icon name="RiImageLine" className="h-8 w-8 text-muted-foreground" />
-                    </div>
-                    <div>
-                      <h4 className="font-semibold">Upload a photo to get started</h4>
-                      <p className="text-sm text-muted-foreground">Your before & after comparison will appear here</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ) : (
-              <div className="relative">
-                {/* Before/After Images */}
-                <div className="grid grid-cols-2 gap-4">
-                  {/* Before Image */}
-                  <div className="space-y-2">
-                    <p className="text-sm font-medium text-center text-muted-foreground">
-                      {hairColorChanger.comparisonSection?.beforeLabel || 'Before'}
-                    </p>
-                    <div className="relative w-full aspect-square rounded-lg overflow-hidden border">
-                      <Image
-                        src={uploadedImage}
-                        alt="Before"
-                        fill
-                        className="object-cover"
-                      />
-                      {processingStatus.status === 'uploading' && (
-                        <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                          <Loader />
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* After Image */}
-                  <div className="space-y-2">
-                    <p className="text-sm font-medium text-center text-muted-foreground">
-                      {hairColorChanger.comparisonSection?.afterLabel || 'After'}
-                    </p>
-                    <div className="relative w-full aspect-square rounded-lg overflow-hidden border">
-                      {processedImage ? (
-                        <Image
-                          src={processedImage}
-                          alt="After"
-                          fill
-                          className="object-cover"
-                        />
-                      ) : processingStatus.status === 'processing' ? (
-                        <div className="h-full bg-muted flex items-center justify-center">
-                          <div className="text-center space-y-4">
-                            <Loader />
-                            <div>
-                              <p className="text-sm font-medium">Processing...</p>
-                              <Progress value={processingStatus.progress} className="w-32 h-2 mt-2" />
-                              <p className="text-xs text-muted-foreground mt-1">
-                                {processingStatus.progress}% complete
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="h-full bg-muted border-dashed border-2 border-muted-foreground/25 flex items-center justify-center">
-                          <div className="text-center space-y-2">
-                            <Icon name="RiMagicLine" className="h-8 w-8 text-muted-foreground mx-auto" />
-                            <p className="text-sm text-muted-foreground">
-                              Select a hair color to see the magic!
-                            </p>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Remove Button */}
-                <Button 
-                  variant="destructive" 
-                  size="sm"
-                  onClick={handleRemoveImage}
-                  className="absolute -top-2 -right-2 rounded-full w-8 h-8 p-0"
-                >
-                  <Icon name="RiCloseLine" className="h-4 w-4" />
-                </Button>
-
-                {/* Download Button (when completed) */}
-                {processingStatus.status === 'completed' && processedImage && (
-                  <div className="mt-4 flex justify-center">
-                    <Button onClick={handleDownload} className="gap-2">
-                      <Icon name="RiDownloadLine" className="h-4 w-4" />
-                      Download Result
-                    </Button>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-
-          {/* Right Side - Upload & Control Panel (2 columns) */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Upload Section */}
+        <div className="max-w-6xl mx-auto space-y-8">
+          {/* 上传和展示区域 */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* 左侧：上传区域或上传后的图片 */}
             <div className="space-y-4">
-              <h3 className="text-xl font-semibold text-center">
-                {hairColorChanger.uploadSection?.title || 'Upload Your Photo'}
-              </h3>
-              
-              {/* Minimal Upload Area (based on reference image) */}
-              <div className="space-y-4">
-                {/* Drop Zone */}
-                <Card
-                  className={cn(
-                    'border-dashed border-2 border-orange-300 bg-gradient-to-br from-orange-50 to-orange-100 transition-all duration-300',
-                    isDragOver && 'border-orange-500 bg-orange-200 scale-105'
-                  )}
-                  onDragOver={e => {
-                    e.preventDefault();
-                    setIsDragOver(true);
-                  }}
-                  onDragLeave={() => setIsDragOver(false)}
-                  onDrop={e => {
-                    e.preventDefault();
-                    setIsDragOver(false);
-                    const file = e.dataTransfer.files?.[0];
-                    if (file) handleFileSelect(file);
-                  }}
-                >
-                  <CardContent className="p-8">
-                    <div className="text-center space-y-4">
-                      <div className="mx-auto w-12 h-12 bg-orange-200 rounded-full flex items-center justify-center">
-                        <Icon name="RiUpload2Line" className="h-6 w-6 text-orange-600" />
+              {!uploadedImage ? (
+                <>
+                  {/* Drop Zone */}
+                  <Card
+                    className={cn(
+                      'border-dashed border-2 border-orange-300 bg-gradient-to-br from-orange-50 to-orange-100 transition-all duration-300 transform-gpu',
+                      isDragOver && 'border-orange-500 bg-orange-200 scale-105 shadow-lg'
+                    )}
+                    onDragOver={e => {
+                      e.preventDefault();
+                      setIsDragOver(true);
+                    }}
+                    onDragLeave={() => setIsDragOver(false)}
+                    onDrop={e => {
+                      e.preventDefault();
+                      setIsDragOver(false);
+                      const file = e.dataTransfer.files?.[0];
+                      if (file) handleFileSelect(file);
+                    }}
+                  >
+                    <CardContent className="p-8">
+                      <div className="text-center space-y-4">
+                        <div className="mx-auto w-12 h-12 bg-orange-200 rounded-full flex items-center justify-center">
+                          <Icon name="RiUpload2Line" className="h-6 w-6 text-orange-600" />
+                        </div>
+                        <div>
+                          <h4 className="font-semibold text-orange-900">
+                            {t('upload_section.drag_text')}
+                          </h4>
+                          <p className="text-sm text-orange-700 mt-1">
+                            {t('upload_section.supported_formats')}
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <h4 className="font-semibold text-orange-900">
-                          {hairColorChanger.uploadSection?.dragText || 'Drag and drop image here'}
-                        </h4>
-                        <p className="text-sm text-orange-700 mt-1">
-                          {hairColorChanger.uploadSection?.supportedFormats || 'Supports JPG, PNG, WEBP'}
-                        </p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+                    </CardContent>
+                  </Card>
 
-                {/* Upload Buttons */}
-                <div className="space-y-3">
-                  {/* Main Upload Button (Orange) */}
+                  {/* Upload Button */}
                   <Button 
                     onClick={() => fileInputRef.current?.click()}
                     className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-4 text-lg rounded-lg shadow-lg hover:shadow-xl transition-all duration-200"
-                    disabled={processingStatus.status === 'uploading'}
+                    disabled={batchProcessingStatus.status === 'uploading'}
                   >
-                    {processingStatus.status === 'uploading' ? (
-                      <>
-                        <Loader className="mr-2" />
-                        Uploading...
-                      </>
+                    {batchProcessingStatus.status === 'uploading' ? (
+                      t('uploading')
                     ) : (
                       <>
                         <Icon name="RiUploadLine" className="mr-2 h-5 w-5" />
-                        {hairColorChanger.uploadSection?.uploadButton?.title || 'Upload Image'}
+                        {t('upload_section.upload_button.title')}
                       </>
                     )}
                   </Button>
+                </>
+              ) : (
+                <>
+                  {/* 上传后显示图片 */}
+                  <div className="relative">
+                    <div className="relative w-full min-h-80 rounded-lg overflow-hidden border shadow-lg">
+                      <Image
+                        src={uploadedImage}
+                        alt="Uploaded Image"
+                        width={0}
+                        height={0}
+                        sizes="100vw"
+                        className="w-full h-auto object-contain"
+                      />
+                      {batchProcessingStatus.status === 'uploading' && (
+                        <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                          <div className="text-white text-sm">{t('uploading')}</div>
+                        </div>
+                      )}
+                    </div>
 
-                  {/* Mobile Upload Button */}
-                  <Button 
-                    variant="outline"
-                    onClick={() => fileInputRef.current?.click()}
-                    className="w-full border-orange-300 text-orange-600 hover:bg-orange-50 font-medium py-3 rounded-lg"
-                    disabled={processingStatus.status === 'uploading'}
+                    {/* Remove Button */}
+                    <Button 
+                      variant="destructive" 
+                      size="sm"
+                      onClick={handleRemoveImage}
+                      className="absolute -top-2 -right-2 rounded-full w-8 h-8 p-0"
+                    >
+                      <Icon name="RiCloseLine" className="h-4 w-4" />
+                    </Button>
+                  </div>
+
+                  {/* 生成按钮（替代上传按钮） */}
+                  <Button
+                    onClick={handleGenerate}
+                    disabled={batchProcessingStatus.status === 'processing' || !imageUrl || selectedColors.length === 0}
+                    className="w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-semibold py-4 text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
                   >
-                    <Icon name="RiPhoneLine" className="mr-2 h-4 w-4" />
-                    {hairColorChanger.uploadSection?.mobileButton?.title || 'Upload From Mobile'}
+                    {batchProcessingStatus.status === 'processing' ? (
+                      t('processing_tasks_count', { count: batchProcessingStatus.tasks.length })
+                    ) : !imageUrl ? (
+                      <>
+                        <Icon name="RiUploadLine" className="mr-2 h-5 w-5" />
+                        {t('please_upload_first')}
+                      </>
+                    ) : selectedColors.length === 0 ? (
+                      <>
+                        <Icon name="RiPaletteLine" className="mr-2 h-5 w-5" />
+                        {t('please_select_colors_first')}
+                      </>
+                    ) : (
+                      <>
+                        <Icon name="RiMagicLine" className="mr-2 h-5 w-5" />
+                        {t('start_with_colors', { count: selectedColors.length })}
+                      </>
+                    )}
                   </Button>
-                </div>
-              </div>
+                </>
+              )}
             </div>
 
-            {/* Connection Status Indicators */}
-            {(connectionStatus.sseConnected || connectionStatus.isPolling || processingStatus.status === 'processing') && (
-              <Card className="bg-blue-50 border-blue-200">
-                <CardContent className="p-4">
-                  <div className="flex items-center justify-between">
-                    <div className="space-y-1">
-                      <p className="text-sm font-medium text-blue-900">Processing Status</p>
-                      <div className="flex gap-2 flex-wrap">
-                        {connectionStatus.sseConnected && (
-                          <Badge variant="outline" className="text-blue-600 border-blue-300">
-                            <Icon name="RiWifiLine" className="h-3 w-3 mr-1" />
-                            Connected
-                          </Badge>
-                        )}
-                        {connectionStatus.isPolling && (
-                          <Badge variant="secondary" className="text-orange-600">
-                            <Icon name="RiRefreshLine" className="h-3 w-3 mr-1" />
-                            Checking Status
-                          </Badge>
-                        )}
-                        {processingStatus.status === 'processing' && (
-                          <Badge className="bg-green-100 text-green-700 border-green-300">
-                            <Icon name="RiPlayLine" className="h-3 w-3 mr-1" />
-                            Processing
-                          </Badge>
-                        )}
-                      </div>
+            {/* 右侧：发色卡选择区域 */}
+            <div className="space-y-4">
+              <Card className="h-full">
+                <CardContent className="p-4 h-full">
+                  <div className="h-full flex flex-col">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="font-semibold text-lg">{t('select_hair_color')}</h3>
+                      {selectedColors.length > 0 && (
+                        <Badge variant="outline" className="text-orange-600">
+                          {t('selected_colors', { count: selectedColors.length })}
+                        </Badge>
+                      )}
                     </div>
+                    
+                    {loadingColors ? (
+                      <div className="flex-1 flex items-center justify-center">
+                        <div className="text-gray-500">{t('loading')}</div>
+                      </div>
+                    ) : (
+                      <div className="flex-1 overflow-y-auto">
+                        <div className="grid grid-cols-6 gap-3">
+                          {hairColorOptions.map((color) => (
+                            <button
+                              key={color.id}
+                              onClick={() => {
+                                setSelectedColors(prev => 
+                                  prev.includes(color.id)
+                                    ? prev.filter(c => c !== color.id)
+                                    : [...prev, color.id]
+                                );
+                              }}
+                              disabled={batchProcessingStatus.status === 'processing'}
+                              className={cn(
+                                'relative group rounded-lg border-2 transition-all duration-300 hover:scale-105 hover:shadow-lg overflow-hidden aspect-square transform-gpu',
+                                selectedColors.includes(color.id)
+                                  ? 'border-orange-500 shadow-lg ring-2 ring-orange-200' 
+                                  : 'border-gray-200 hover:border-orange-300 hover:shadow-md',
+                                batchProcessingStatus.status === 'processing' && 'cursor-not-allowed'
+                              )}
+                              title={color.name}
+                            >
+                              <Image
+                                src={color.imageUrl}
+                                alt={color.name}
+                                fill
+                                className="object-cover rounded-lg"
+                              />
+                              {selectedColors.includes(color.id) && (
+                                <>
+                                  <div className="absolute inset-0 bg-orange-500/20 rounded-lg" />
+                                  <div className="absolute top-1 right-1 w-4 h-4 bg-orange-500 rounded-full flex items-center justify-center">
+                                    <Icon name="RiCheckLine" className="h-2.5 w-2.5 text-white" />
+                                  </div>
+                                </>
+                              )}
+                              {color.isPopular && (
+                                <div className="absolute top-1 left-1 w-2 h-2 bg-red-500 rounded-full"></div>
+                              )}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </CardContent>
               </Card>
-            )}
+            </div>
+          </div>
 
-            {/* Hair Color Selection */}
-            {uploadedImage && imageUrl && (
-              <div className="space-y-4">
-                <h3 className="text-xl font-semibold text-center">
-                  {hairColorChanger.colorSelection?.title || 'Choose Hair Color'}
-                </h3>
-                
-                {/* Default Hair Colors */}
-                <div className="space-y-4">
-                  {/* Natural Colors */}
-                  <div>
-                    <h4 className="font-medium text-sm text-gray-700 mb-3">Natural Colors</h4>
-                    <div className="grid grid-cols-4 gap-3">
-                      {DEFAULT_HAIR_COLORS.natural.map((color) => (
-                        <button
-                          key={color.code}
-                          onClick={() => setSelectedColor(color.code)}
-                          className={cn(
-                            'flex flex-col items-center space-y-2 p-3 rounded-lg border-2 transition-all duration-200 hover:scale-105',
-                            selectedColor === color.code 
-                              ? 'border-orange-500 bg-orange-50 shadow-md' 
-                              : 'border-gray-200 hover:border-gray-300'
-                          )}
-                          disabled={processingStatus.status === 'processing'}
-                        >
-                          <div 
-                            className="w-8 h-8 rounded-full border-2 border-white shadow-sm"
-                            style={{ backgroundColor: color.previewColor }}
-                          />
-                          <span className="text-xs font-medium text-center">{color.name}</span>
-                          {color.isPopular && (
-                            <Badge variant="secondary" className="text-xs px-1 py-0">
-                              Popular
-                            </Badge>
-                          )}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
+          {/* 结果展示区域（横向跑马灯） */}
+          {uploadedImage && batchProcessingStatus.tasks.length > 0 && (
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className="font-semibold text-lg">{t('transformation_results')}</h3>
+                <Badge variant="outline" className="text-green-600">
+                  {t('completed_tasks', { 
+                    completed: batchProcessingStatus.tasks.filter(t => t.status === 'completed').length,
+                    total: batchProcessingStatus.tasks.length 
+                  })}
+                </Badge>
+              </div>
+              <div className="bg-white rounded-lg border p-4">
+                <ResultGrid
+                  tasks={batchProcessingStatus.tasks}
+                  onDownload={handleDownload}
+                  className="min-h-64"
+                  onProgressUpdate={(taskId, progress) => {
+                    setBatchProcessingStatus(prev => ({
+                      ...prev,
+                      tasks: prev.tasks.map(task => 
+                        task.userMediaRecordId === taskId
+                          ? { ...task, progress }
+                          : task
+                      ),
+                    }));
+                  }}
+                />
+              </div>
+            </div>
+          )}
+          
 
-                  {/* Fashion Colors */}
-                  <div>
-                    <h4 className="font-medium text-sm text-gray-700 mb-3">Fashion Colors</h4>
-                    <div className="grid grid-cols-4 gap-3">
-                      {DEFAULT_HAIR_COLORS.fashion.map((color) => (
-                        <button
-                          key={color.code}
-                          onClick={() => setSelectedColor(color.code)}
-                          className={cn(
-                            'flex flex-col items-center space-y-2 p-3 rounded-lg border-2 transition-all duration-200 hover:scale-105',
-                            selectedColor === color.code 
-                              ? 'border-orange-500 bg-orange-50 shadow-md' 
-                              : 'border-gray-200 hover:border-gray-300'
-                          )}
-                          disabled={processingStatus.status === 'processing'}
-                        >
-                          <div 
-                            className="w-8 h-8 rounded-full border-2 border-white shadow-sm"
-                            style={{ backgroundColor: color.previewColor }}
-                          />
-                          <span className="text-xs font-medium text-center">{color.name}</span>
-                          {color.isPopular && (
-                            <Badge variant="secondary" className="text-xs px-1 py-0">
-                              Trending
-                            </Badge>
-                          )}
-                        </button>
-                      ))}
+          {/* Connection Status Indicators */}
+          {(isPolling || batchProcessingStatus.status === 'processing') && (
+            <Card className="bg-blue-50 border-blue-200 mt-6">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div className="space-y-1">
+                    <p className="text-sm font-medium text-blue-900">{t('processing_status')}</p>
+                    <div className="flex gap-2 flex-wrap">
+                      {isPolling && (
+                        <Badge variant="secondary" className="text-orange-600">
+                          <Icon name="RiRefreshLine" className="h-3 w-3 mr-1" />
+                          {t('checking_status')}
+                        </Badge>
+                      )}
+                      {batchProcessingStatus.status === 'processing' && (
+                        <Badge className="bg-green-100 text-green-700 border-green-300">
+                          <Icon name="RiPlayLine" className="h-3 w-3 mr-1" />
+                          {t('processing_tasks', { count: batchProcessingStatus.tasks.length })}
+                        </Badge>
+                      )}
                     </div>
                   </div>
                 </div>
-
-                {/* Generate Button */}
-                {selectedColor && (
-                  <div className="pt-2">
-                    <Button 
-                      onClick={handleGenerate}
-                      disabled={processingStatus.status === 'processing' || !selectedColor || !imageUrl}
-                      className="w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-semibold py-4 text-lg rounded-lg shadow-lg hover:shadow-xl transition-all duration-200"
-                    >
-                      {processingStatus.status === 'processing' ? (
-                        <>
-                          <Loader className="mr-2" />
-                          Processing...
-                        </>
-                      ) : (
-                        <>
-                          <Icon name="RiMagicLine" className="mr-2 h-5 w-5" />
-                          Transform Hair Color
-                        </>
-                      )}
-                    </Button>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Instructions */}
-            <Card className="bg-gray-50">
-              <CardContent className="p-4">
-                <h4 className="font-semibold text-sm text-gray-900 mb-2">Tips for best results:</h4>
-                <ul className="text-sm text-gray-600 space-y-1">
-                  <li>• Use a clear photo where your hair is visible</li>
-                  <li>• Good lighting works best (natural daylight)</li>
-                  <li>• Avoid heavily filtered photos</li>
-                  <li>• Works with all hair types and styles</li>
-                </ul>
               </CardContent>
             </Card>
-          </div>
+          )}
+
+          {/* Instructions */}
+          <Card className="bg-gray-50 mt-6">
+            <CardContent className="p-4">
+              <h4 className="font-semibold text-sm text-gray-900 mb-2">{t('tips_title')}</h4>
+              <ul className="text-sm text-gray-600 space-y-1">
+                {t.raw('tips').map((tip: string, index: number) => (
+                  <li key={index}>• {tip}</li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
         </div>
 
         {/* Hidden file input */}

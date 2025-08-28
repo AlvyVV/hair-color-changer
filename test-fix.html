@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hair Color Selection Fix Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+        }
+        .upload-section {
+            border: 2px dashed #ff6b35;
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+            background: linear-gradient(135deg, #fff5f1, #ffeee8);
+            margin-bottom: 24px;
+        }
+        .colors-section {
+            margin: 24px 0;
+        }
+        .colors-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin: 16px 0;
+        }
+        .color-card {
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+        .color-card:hover {
+            transform: scale(1.05);
+            border-color: #ff6b35;
+        }
+        .color-card.selected {
+            border-color: #ff6b35;
+            box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+        }
+        .color-image {
+            width: 100%;
+            height: 80px;
+            object-fit: cover;
+            display: block;
+        }
+        .color-name {
+            padding: 8px;
+            text-align: center;
+            font-size: 12px;
+            font-weight: 500;
+            background: white;
+        }
+        .selected-badge {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            width: 20px;
+            height: 20px;
+            background: #ff6b35;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+        }
+        .status-bar {
+            padding: 16px;
+            margin: 16px 0;
+            background: #f0f8ff;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .generate-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(45deg, #ff6b35, #f7931e);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 16px 0;
+        }
+        .generate-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background: #ccc;
+        }
+        .generate-btn:hover:not(:disabled) {
+            opacity: 0.9;
+        }
+        .warning-text {
+            color: #ff6b35;
+            font-size: 14px;
+            text-align: center;
+            margin-top: 8px;
+        }
+        h2, h3 {
+            color: #333;
+            margin: 16px 0 8px 0;
+        }
+        .category-title {
+            font-size: 14px;
+            color: #666;
+            font-weight: 600;
+            margin: 16px 0 8px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>🎨 Hair Color Changer - Fixed UI</h2>
+        
+        <!-- Upload Section -->
+        <div class="upload-section">
+            <div style="font-size: 48px; margin-bottom: 16px;">📷</div>
+            <h3>Upload Your Photo</h3>
+            <p style="color: #666; margin: 8px 0;">Drag and drop or click to upload</p>
+            <button onclick="toggleUpload()" style="background: #ff6b35; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; margin-top: 12px;">
+                <span id="uploadText">📤 Upload Image</span>
+            </button>
+        </div>
+        
+        <!-- Status Bar -->
+        <div class="status-bar">
+            <div id="statusText">Select colors to get started</div>
+        </div>
+        
+        <!-- Colors Section - Always Visible Now! -->
+        <div class="colors-section">
+            <h3>Choose Hair Colors</h3>
+            
+            <div class="category-title">Natural Colors</div>
+            <div class="colors-grid" id="naturalColors"></div>
+            
+            <div class="category-title">Fashion Colors</div>
+            <div class="colors-grid" id="fashionColors"></div>
+            
+            <div class="category-title">Trendy Colors</div>
+            <div class="colors-grid" id="trendyColors"></div>
+            
+            <div class="category-title">Bright Colors</div>
+            <div class="colors-grid" id="brightColors"></div>
+        </div>
+        
+        <!-- Generate Button -->
+        <button class="generate-btn" id="generateBtn" onclick="generateColors()">
+            🎭 Upload Image First
+        </button>
+        
+        <div id="warningText" class="warning-text" style="display: none;">
+            Please upload an image to start processing
+        </div>
+    </div>
+
+    <script>
+        let selectedColors = [];
+        let hasImage = false;
+        
+        // Mock color data
+        const colorData = {
+            natural: [
+                { id: 'nat1', name: 'Style 1', imageUrl: '/imgs/xref4.jpeg' },
+                { id: 'nat2', name: 'Style 2', imageUrl: '/imgs/xref6.jpeg' },
+                { id: 'nat3', name: 'Style 3', imageUrl: '/imgs/xref8.jpeg' },
+                { id: 'nat4', name: 'Style 4', imageUrl: '/imgs/xref10.jpeg' }
+            ],
+            fashion: [
+                { id: 'fash1', name: 'Style 5', imageUrl: '/imgs/xref12.jpeg' },
+                { id: 'fash2', name: 'Style 6', imageUrl: '/imgs/xref14.jpeg' },
+                { id: 'fash3', name: 'Style 7', imageUrl: '/imgs/xref16.jpeg' },
+                { id: 'fash4', name: 'Style 8', imageUrl: '/imgs/xref18.jpeg' }
+            ],
+            trendy: [
+                { id: 'trend1', name: 'Style 9', imageUrl: '/imgs/xref20.jpeg' },
+                { id: 'trend2', name: 'Style 10', imageUrl: '/imgs/xref22.jpeg' },
+                { id: 'trend3', name: 'Style 11', imageUrl: '/imgs/xref24.jpeg' },
+                { id: 'trend4', name: 'Style 12', imageUrl: '/imgs/xref26.jpeg' }
+            ],
+            bright: [
+                { id: 'bright1', name: 'Style 13', imageUrl: '/imgs/xref28.jpeg' },
+                { id: 'bright2', name: 'Style 14', imageUrl: '/imgs/xref30.jpeg' },
+                { id: 'bright3', name: 'Style 15', imageUrl: '/imgs/xref32.jpeg' },
+                { id: 'bright4', name: 'Style 16', imageUrl: '/imgs/xref34.jpeg' }
+            ]
+        };
+        
+        // Render color grids
+        function renderColors() {
+            Object.keys(colorData).forEach(category => {
+                const container = document.getElementById(category + 'Colors');
+                container.innerHTML = colorData[category].map(color => `
+                    <div class="color-card ${selectedColors.includes(color.id) ? 'selected' : ''}" 
+                         onclick="toggleColor('${color.id}')">
+                        <img src="${color.imageUrl}" alt="${color.name}" class="color-image" />
+                        <div class="color-name">${color.name}</div>
+                        ${selectedColors.includes(color.id) ? '<div class="selected-badge">✓</div>' : ''}
+                    </div>
+                `).join('');
+            });
+        }
+        
+        // Toggle color selection
+        function toggleColor(colorId) {
+            if (selectedColors.includes(colorId)) {
+                selectedColors = selectedColors.filter(id => id !== colorId);
+            } else {
+                selectedColors.push(colorId);
+            }
+            updateUI();
+        }
+        
+        // Toggle upload state
+        function toggleUpload() {
+            hasImage = !hasImage;
+            updateUI();
+        }
+        
+        // Update UI
+        function updateUI() {
+            const statusText = document.getElementById('statusText');
+            const generateBtn = document.getElementById('generateBtn');
+            const warningText = document.getElementById('warningText');
+            const uploadText = document.getElementById('uploadText');
+            
+            // Update upload button
+            uploadText.textContent = hasImage ? '✅ Image Uploaded' : '📤 Upload Image';
+            
+            // Update status text
+            if (selectedColors.length > 0) {
+                statusText.textContent = `Selected ${selectedColors.length} color${selectedColors.length > 1 ? 's' : ''}`;
+            } else {
+                statusText.textContent = 'Select colors to get started';
+            }
+            
+            // Update generate button
+            if (selectedColors.length === 0) {
+                generateBtn.style.display = 'none';
+                warningText.style.display = 'none';
+            } else {
+                generateBtn.style.display = 'block';
+                if (!hasImage) {
+                    generateBtn.textContent = '📤 Upload Image First';
+                    generateBtn.disabled = true;
+                    warningText.style.display = 'block';
+                } else {
+                    generateBtn.textContent = `🎭 Transform with ${selectedColors.length} Color${selectedColors.length > 1 ? 's' : ''}`;
+                    generateBtn.disabled = false;
+                    warningText.style.display = 'none';
+                }
+            }
+            
+            renderColors();
+        }
+        
+        // Generate colors
+        function generateColors() {
+            if (selectedColors.length === 0 || !hasImage) return;
+            alert(`🎉 Processing ${selectedColors.length} colors! (This is a demo)`);
+        }
+        
+        // Initialize
+        updateUI();
+    </script>
+</body>
+</html>

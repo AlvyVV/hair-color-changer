@@ -4,5 +4,43 @@
     "switch_to": "切换到 {language}",
     "not_now": "暂不切换",
     "close": "关闭"
+  },
+  "hair_color_changer": {
+    "upload_section": {
+      "drag_text": "拖拽图片到这里",
+      "supported_formats": "支持 JPG, PNG, WEBP",
+      "upload_button": {
+        "title": "上传图片"
+      }
+    },
+    "uploading": "上传中...",
+    "select_hair_color": "选择发色",
+    "selected_colors": "已选择 {count} 个颜色",
+    "loading": "加载中...",
+    "processing": "正在处理 {count} 个任务...",
+    "please_upload_image": "请先上传图片", 
+    "please_select_colors": "请选择颜色",
+    "start_transformation": "使用 {count} 个颜色开始变身 ✨",
+    "transformation_results": "变身结果",
+    "completed_tasks": "{completed} / {total} 完成",
+    "processing_status": "处理状态",
+    "connected": "已连接",
+    "checking_status": "检查状态中",
+    "processing_tasks": "正在处理 {count} 个任务",
+    "tips_title": "获得最佳效果的小贴士:",
+    "tips": [
+      "使用清晰的照片，能够看到头发",
+      "良好的光线效果最佳（自然光）",
+      "避免使用过度滤镜的照片", 
+      "适用于所有发质和发型"
+    ],
+    "download_all": "下载全部",
+    "processing_with_progress": "处理中 {progress}%",
+    "processing_failed": "处理失败",
+    "waiting": "等待中",
+    "processing_tasks_count": "正在处理 {count} 个任务...",
+    "please_upload_first": "请先上传图片",
+    "please_select_colors_first": "请选择颜色",
+    "start_with_colors": "使用 {count} 个颜色开始变身 ✨"
   }
 }

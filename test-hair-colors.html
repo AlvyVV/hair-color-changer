@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hair Color Changer Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .colors-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .color-item {
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .color-item:hover {
+            transform: scale(1.05);
+            border-color: #ff6b35;
+        }
+        .color-item.selected {
+            border-color: #ff6b35;
+            box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+        }
+        .color-image {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+        }
+        .color-name {
+            padding: 8px;
+            text-align: center;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .selected-count {
+            margin: 20px 0;
+            padding: 10px;
+            background: #f0f8ff;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .test-button {
+            background: linear-gradient(45deg, #ff6b35, #f7931e);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            margin: 10px 5px;
+        }
+        .test-button:hover {
+            opacity: 0.9;
+        }
+        .test-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <h1>Hair Color Changer - Batch Processing Test</h1>
+    
+    <div class="selected-count" id="selectedCount">
+        No colors selected
+    </div>
+    
+    <div id="colorsContainer">
+        Loading colors...
+    </div>
+    
+    <div style="text-align: center; margin-top: 20px;">
+        <button class="test-button" id="testApiButton" disabled>Test API Call</button>
+        <button class="test-button" onclick="clearSelection()">Clear Selection</button>
+    </div>
+    
+    <div id="apiResult" style="margin-top: 20px; padding: 10px; background: #f5f5f5; border-radius: 8px; display: none;">
+        <h3>API Response:</h3>
+        <pre id="responseText"></pre>
+    </div>
+
+    <script>
+        let hairColors = [];
+        let selectedColors = [];
+
+        // Load hair colors
+        async function loadHairColors() {
+            try {
+                const response = await fetch('/hair-colors.json');
+                hairColors = await response.json();
+                renderColors();
+            } catch (error) {
+                document.getElementById('colorsContainer').innerHTML = 'Error loading colors: ' + error.message;
+            }
+        }
+
+        // Render color grid
+        function renderColors() {
+            const container = document.getElementById('colorsContainer');
+            const categories = ['natural', 'fashion', 'trendy', 'bright'];
+            const categoryNames = {
+                natural: 'Natural Colors',
+                fashion: 'Fashion Colors', 
+                trendy: 'Trendy Colors',
+                bright: 'Bright Colors'
+            };
+
+            container.innerHTML = '';
+
+            categories.forEach(category => {
+                const categoryColors = hairColors.filter(color => color.category === category);
+                if (categoryColors.length === 0) return;
+
+                const categoryDiv = document.createElement('div');
+                categoryDiv.innerHTML = `
+                    <h3 style="margin: 20px 0 10px 0; color: #333;">${categoryNames[category]}</h3>
+                    <div class="colors-grid">
+                        ${categoryColors.map(color => `
+                            <div class="color-item ${selectedColors.includes(color.id) ? 'selected' : ''}" 
+                                 onclick="toggleColor('${color.id}')">
+                                <img src="${color.imageUrl}" alt="${color.name}" class="color-image" />
+                                <div class="color-name">${color.name}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                container.appendChild(categoryDiv);
+            });
+        }
+
+        // Toggle color selection
+        function toggleColor(colorId) {
+            if (selectedColors.includes(colorId)) {
+                selectedColors = selectedColors.filter(id => id !== colorId);
+            } else {
+                selectedColors.push(colorId);
+            }
+            
+            updateUI();
+        }
+
+        // Update UI
+        function updateUI() {
+            const countElement = document.getElementById('selectedCount');
+            const testButton = document.getElementById('testApiButton');
+            
+            if (selectedColors.length === 0) {
+                countElement.textContent = 'No colors selected';
+                testButton.disabled = true;
+            } else {
+                countElement.textContent = `Selected ${selectedColors.length} color${selectedColors.length > 1 ? 's' : ''}`;
+                testButton.disabled = false;
+            }
+            
+            renderColors(); // Re-render to update selection state
+        }
+
+        // Clear selection
+        function clearSelection() {
+            selectedColors = [];
+            updateUI();
+        }
+
+        // Test API call
+        async function testApiCall() {
+            if (selectedColors.length === 0) return;
+
+            // Get selected color URLs
+            const pickcolorUrls = selectedColors.map(colorId => {
+                const color = hairColors.find(c => c.id === colorId);
+                return `${window.location.origin}${color.imageUrl}`;
+            });
+
+            const payload = {
+                userImageUrl: "https://example.com/user-image.jpg", // Placeholder
+                pickcolorUrls: pickcolorUrls
+            };
+
+            try {
+                document.getElementById('responseText').textContent = 'Loading...';
+                document.getElementById('apiResult').style.display = 'block';
+
+                const response = await fetch('/api/hair-color-changer', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+                document.getElementById('responseText').textContent = JSON.stringify(result, null, 2);
+            } catch (error) {
+                document.getElementById('responseText').textContent = 'Error: ' + error.message;
+            }
+        }
+
+        // Add event listener to test button
+        document.getElementById('testApiButton').addEventListener('click', testApiCall);
+
+        // Load colors on page load
+        loadHairColors();
+    </script>
+</body>
+</html>
