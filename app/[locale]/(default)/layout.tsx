@@ -9,7 +9,7 @@ export default async function DefaultLayout({ children, params }: { children: Re
   return (
     <>
       <Header />
-      <LanguageSwitchReminder />
+      {/*<LanguageSwitchReminder />*/}
       <main className="overflow-x-hidden">{children}</main>
       <Footer />
       {/* <Feedback socialLinks={page.footer?.social?.items} /> */}
