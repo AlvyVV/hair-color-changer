@@ -5,33 +5,31 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { BorderBeam } from '@/components/magicui/border-beam';
-import { AnimatedBeam } from '@/components/magicui/animated-beam';
 import { Particles } from '@/components/magicui/particles';
 import { CoolMode } from '@/components/magicui/cool-mode';
 import { ConfettiButton } from '@/components/magicui/confetti';
-import { ShimmerButton } from '@/components/magicui/shimmer-button';
 import { useTheme } from 'next-themes';
-import { CheckCircle, Download, Heart, Palette, Sparkles, Star, Upload, Zap } from 'lucide-react';
 import HairColorChangerBlock from '@/components/blocks/hair-color-changer';
+import { Icon } from '@/components/icon';
 
 const features = [
   {
-    icon: <Sparkles className="w-6 h-6" />,
+    icon: <Icon name="RiSparkling2Line" className="w-6 h-6" />,
     title: 'Try Before You Dye',
     description: 'Skip the hair dye regret. See exactly how any color looks on you before making a permanent change. No more "oops" moments or expensive color corrections – discover what truly suits you first.',
   },
   {
-    icon: <Heart className="w-6 h-6" />,
+    icon: <Icon name="RiHeartLine" className="w-6 h-6" />,
     title: 'No Damage, No Drama',
     description: 'Love to switch hair colors but worry about damage? Virtual try-ons mean endless makeovers with zero harm to your hair. It\'s all the fun of a new color, without the bleach and breakage.',
   },
   {
-    icon: <Star className="w-6 h-6" />,
+    icon: <Icon name="RiStarLine" className="w-6 h-6" />,
     title: 'For Every Occasion',
     description: 'Find the perfect hair color for that upcoming wedding, party or festival. Go dark and sleek for a formal event, or test a vibrant neon for a fun night out – all online, effortlessly. Match your hair to your outfit or the season (rich auburn for fall, anyone?) without a trip to the salon.',
   },
   {
-    icon: <Zap className="w-6 h-6" />,
+    icon: <Icon name="RiFlashlightLine" className="w-6 h-6" />,
     title: 'Social Media Ready',
     description: 'Impress your followers and friends with fresh looks – #NewHairDontCare. Our tool helps you create share-worthy transformations in a snap. Try a trendy shade you\'ve seen on Instagram and share your virtual makeover to get opinions from friends (or just rack up the likes)!',
   },
@@ -41,32 +39,32 @@ const keyFeatures = [
   {
     title: 'Realistic Results',
     description: 'Powered by advanced AI, the color application looks natural. The tool analyzes your photo to detect hair and blend new hues with your lighting and hair texture, so the outcome looks like a real photo, not a sloppy filter. From shiny brunettes to multi-tonal pastels, colors render true-to-life.',
-    icon: <CheckCircle className="w-6 h-6 text-primary" />,
+    icon: <Icon name="RiCheckboxCircleLine" className="w-6 h-6 text-primary" />,
   },
   {
     title: 'Endless Shades',
     description: 'Explore a wide range of shades – from classic colors (blonde, brown, black, auburn) to trendy fashion colors (rose gold, purple, teal, you name it!). We even offer a Custom Color option where you can fine-tune and create your own shade or try exotic hues via text prompt. Your imagination is the limit.',
-    icon: <Palette className="w-6 h-6 text-primary" />,
+    icon: <Icon name="RiPaletteLine" className="w-6 h-6 text-primary" />,
   },
   {
     title: 'Instant Makeover',
-    description: 'No waiting around. In just a few seconds, the AI applies your chosen color to your hair. It’s practically real-time – faster (and cheaper) than any salon test strand! This means you can try multiple looks in minutes.',
-    icon: <Zap className="w-6 h-6 text-primary" />,
+    description: 'No waiting around. In just a few seconds, the AI applies your chosen color to your hair. It\'s practically real-time - faster (and cheaper) than any salon test strand! This means you can try multiple looks in minutes.',
+    icon: <Icon name="RiTimeLine" className="w-6 h-6 text-primary" />,
   },
   {
     title: 'Easy & Accessible: No tech skills required',
-    description: 'The interface is simple: upload a photo and tap on colors to preview. It’s entirely web-based, so there’s nothing to install. Whether you’re on a phone, tablet, or laptop, you can experiment anywhere, anytime.',
-    icon: <Zap className="w-6 h-6 text-primary" />,
+    description: 'The interface is simple: upload a photo and tap on colors to preview. It\'s entirely web-based, so there\'s nothing to install. Whether you\'re on a phone, tablet, or laptop, you can experiment anywhere, anytime.',
+    icon: <Icon name="RiSmartphoneLine" className="w-6 h-6 text-primary" />,
   },
   {
     title: 'Keep Your Style',
     description: 'Our tool only changes the hair color, not your hairstyle. Curls stay curly, and updos stay intact – we just recolor them. Your friends might think you actually dyed your hair in the photo! This focus on color (while preserving all other details) gives a realistic preview of you with a new shade, so you can truly gauge the look.',
-    icon: <Zap className="w-6 h-6 text-primary" />,
+    icon: <Icon name="RiBrushLine" className="w-6 h-6 text-primary" />,
   },
   {
     title: 'Private & Secure',
-    description: 'We respect your privacy. Your photos aren’t saved or shared, so you can feel safe uploading your favorite selfies. (Pro tip: use a high-quality, well-lit photo for the best result – good lighting helps the AI create even more realistic changes.)',
-    icon: <Zap className="w-6 h-6 text-primary" />,
+    description: 'We respect your privacy. Your photos aren\'t saved or shared, so you can feel safe uploading your favorite selfies. (Pro tip: use a high-quality, well-lit photo for the best result - good lighting helps the AI create even more realistic changes.)',
+    icon: <Icon name="RiLockLine" className="w-6 h-6 text-primary" />,
   },
 ];
 
@@ -75,19 +73,19 @@ const steps = [
     step: '1',
     title: 'Upload Your Photo',
     description: 'Choose a clear photo of yourself where your hair is visible. Straight-on selfies with good lighting work best.',
-    icon: <Upload className="w-8 h-8" />,
+    icon: <Icon name="RiUpload2Line" className="w-8 h-8" />,
   },
   {
     step: '2',
     title: 'Choose a Color',
     description: 'Pick a shade from our color menu that you want to try. Browse categories or use the custom picker for an exact hue.',
-    icon: <Palette className="w-8 h-8" />,
+    icon: <Icon name="RiPaletteLine" className="w-8 h-8" />,
   },
   {
     step: '3',
     title: 'Preview & Share',
     description: 'Voilà! In seconds, you\'ll see your hair magically recolored. Love the result? Download it or share it on social media!',
-    icon: <Download className="w-8 h-8" />,
+    icon: <Icon name="RiDownloadLine" className="w-8 h-8" />,
   },
 ];
 
@@ -162,15 +160,15 @@ export default function HomePageClient() {
           <div className="text-center max-w-6xl mx-auto">
             <div className="relative inline-block">
               <h1
-                className="text-5xl lg:text-7xl font-bold mb-6 bg-gradient-to-r from-primary via-primary to-orange-500 bg-clip-text text-transparent leading-tight">
+                className="text-5xl lg:text-7xl font-bold mb-6 bg-gradient-to-r from-primary via-primary to-orange-700 bg-clip-text text-transparent leading-tight">
                 AI Hair Color Changer
               </h1>
-              <BorderBeam
-                size={200}
-                duration={4}
-                delay={2}
-                colorFrom="#f1a13a"
-                colorTo="#ff6b35"
+              <BorderBeam className={'p-2'}
+                          size={200}
+                          duration={4}
+                          delay={2}
+                          colorFrom="#f1a13a"
+                          colorTo="#ff6b35"
               />
             </div>
 
@@ -179,17 +177,19 @@ export default function HomePageClient() {
             </h2>
 
             <p className="text-xl lg:text-2xl mb-8 text-muted-foreground max-w-4xl mx-auto leading-relaxed">
-              Transform Your Look in Seconds (Without the Commitment)
+              Transform Your Look in 30 Seconds
             </p>
 
             <p className="text-lg mb-12 text-muted-foreground max-w-3xl mx-auto">
-              Ever wondered how you'd look as a redhead or with pastel pink locks? Our AI hair color changer lets you
+              Ever wondered how you’d look as a redhead or with pastel pink locks? Our AI hair color changer lets you
               find out instantly – no salon, no mess, no risk. Simply upload a selfie and try on dozens of hair colors
-              virtually.
+              virtually. It’s the ultimate way to experiment with your style before you commit. Why stick to one look?
+              With our tool, you can be blonde, brunette, or bold blue – all in one day! Find a shade that matches your
+              vibe and walk into your next salon appointment with confidence
             </p>
 
             <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
-              <CoolMode options={{ particle: '✨' }}>
+              <CoolMode>
                 <ConfettiButton
                   size="lg"
                   className="px-8 py-4 text-lg font-semibold bg-gradient-to-r from-primary to-orange-500 hover:from-orange-500 hover:to-primary transition-all duration-300 shadow-lg hover:shadow-xl"
@@ -198,50 +198,52 @@ export default function HomePageClient() {
                     spread: 70,
                     origin: { y: 0.6 },
                   }}
+                  onClick={() => {
+                    document.getElementById('hair-color-changer')?.scrollIntoView({ behavior: 'smooth' });
+                  }}
                 >
                   Try It Now - Free!
-                  <Sparkles className="ml-2 w-5 h-5" />
+                  <Icon name="RiSparkling2Line" className="ml-2 w-5 h-5" />
                 </ConfettiButton>
               </CoolMode>
 
-              <Button
-                variant="outline"
-                size="lg"
-                className="px-8 py-4 text-lg font-semibold border-2 hover:bg-primary/10 transition-all duration-300"
-              >
-                Watch Demo
-              </Button>
+              {/*<Button*/}
+              {/*  variant="outline"*/}
+              {/*  size="lg"*/}
+              {/*  className="px-8 py-4 text-lg font-semibold border-2 hover:bg-primary/10 transition-all duration-300"*/}
+              {/*>*/}
+              {/*  Watch Demo*/}
+              {/*</Button>*/}
             </div>
 
-            <div className="mt-6 flex flex-wrap justify-center gap-4 items-center">
-              <ShimmerButton
-                className="px-4 py-2 text-sm"
-                shimmerColor="#f1a13a"
-                background="rgba(241, 161, 58, 0.1)"
-              >
-                100% Free & Online
-              </ShimmerButton>
-              <span className="text-sm text-muted-foreground">•</span>
-              <span className="text-sm text-muted-foreground">No Registration Required</span>
-              <span className="text-sm text-muted-foreground">•</span>
-              <span className="text-sm text-muted-foreground">Instant Results</span>
+            <div className="mt-6 flex flex-wrap text-sm text-muted-foreground  justify-center gap-4 items-center">
+              <span>100% Free & Online</span>
+              <span>•</span>
+              <span>No Registration Required</span>
+              <span>•</span>
+              <span>Instant Results</span>
             </div>
           </div>
         </div>
       </section>
+
+      {/* Gradient Divider */}
+      <div className="relative py-12">
+        <div className="h-px bg-gradient-to-r from-transparent via-primary to-transparent opacity-60"></div>
+      </div>
 
       <HairColorChangerBlock></HairColorChangerBlock>
 
       <div className="border-t border-border/30"></div>
 
       {/* Benefits Section */}
-      <section className="py-24 bg-muted/30">
+      <section className="py-24   ">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-4xl lg:text-5xl font-bold mb-6 text-center">
-              Why You'll Love Our Virtual Hair Color Changer
+              AI Hair Color Changer with Multiple Stylish Shades
             </h2>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+            <p className="text-xl text-muted-foreground max-w-7xl mx-auto">
               Join thousands of users who've found their perfect shade without a single drop of dye
             </p>
           </div>
@@ -274,14 +276,17 @@ export default function HomePageClient() {
         </div>
       </section>
 
-      <div className="border-t border-border/30"></div>
+      {/* Gradient Divider */}
+      <div className="relative">
+        <div className="h-px bg-gradient-to-r from-transparent via-primary to-transparent opacity-60"></div>
+      </div>
 
       {/* Key Features Section */}
       <section className="py-24">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-4xl lg:text-5xl font-bold mb-6">
-              Key Features – Why You'll Love Our Virtual Hair Color Changer
+              Why You'll Love Our Virtual Hair Color Changer
             </h2>
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
               Our AI-powered tool is designed for ultra-realistic results and a fun, seamless user experience
@@ -308,23 +313,28 @@ export default function HomePageClient() {
           </div>
 
           <div className="mt-16 text-center">
-            <p className="text-lg text-muted-foreground mb-8">
-              <strong>100% Free & Online:</strong> Experience all these benefits free of charge. Unlike salon
-              consultations or paid apps, our virtual hair color changer is free to use, anytime. It works in your web
-              browser (on mobile or desktop) – no downloads or installs needed.
+            <p className="text-sm text-muted-foreground mb-8">
+              <strong>100% Free & Online:</strong>
+              <p>
+                Experience all these benefits free of charge. Unlike salon
+                consultations or paid apps, our virtual hair color changer is free to use, anytime. It works in your web
+                browser (on mobile or desktop) – no downloads or installs needed.
+              </p>
             </p>
           </div>
         </div>
       </section>
 
-      <div className="border-t border-border/30"></div>
+      {/* Gradient Divider */}
+      <div className="relative">
+        <div className="h-px bg-gradient-to-r from-transparent via-primary to-transparent opacity-60"></div>
+      </div>
 
-      {/* How It Works Section */}
-      <section className="py-24 bg-muted/30" ref={containerRef}>
+      <section className="py-24" ref={containerRef}>
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-4xl lg:text-5xl font-bold mb-6">
-              How It Works – From Selfie to New Hair Color in 3 Steps
+              From Selfie to New Hair Color in 3 Steps
             </h2>
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
               You don't need to be tech-savvy or spend hours editing. Using our AI hair color changer is as easy as
@@ -358,35 +368,14 @@ export default function HomePageClient() {
                 </Card>
               </div>
             ))}
-
-            {/* Animated Beams */}
-            <AnimatedBeam
-              containerRef={containerRef}
-              fromRef={step1Ref}
-              toRef={step2Ref}
-              curvature={0}
-              duration={3}
-            />
-            <AnimatedBeam
-              containerRef={containerRef}
-              fromRef={step2Ref}
-              toRef={step3Ref}
-              curvature={0}
-              duration={3}
-              delay={1.5}
-            />
-          </div>
-
-          <div className="mt-16 text-center">
-            <p className="text-lg text-muted-foreground mb-8">
-              <strong>No installation or signup required</strong> – start a session and try colors instantly in your
-              browser. If on mobile, you can even take a live selfie and try colors in real-time.
-            </p>
           </div>
         </div>
       </section>
 
-      <div className="border-t border-border/30"></div>
+      {/* Gradient Divider */}
+      <div className="relative">
+        <div className="h-px bg-gradient-to-r from-transparent via-primary to-transparent opacity-60"></div>
+      </div>
 
       {/* FAQ Section */}
       <section className="py-24">
@@ -421,39 +410,37 @@ export default function HomePageClient() {
       <div className="border-t border-border/30"></div>
 
       {/* Final CTA Section */}
-      <section className="py-24 bg-gradient-to-r from-primary/10 via-orange-500/10 to-primary/10">
-        <div className="container mx-auto px-4 text-center">
-          <div className="max-w-4xl mx-auto">
-            <h2 className="text-4xl lg:text-5xl font-bold mb-6">
-              Ready for Your Virtual Hair Makeover?
-            </h2>
-            <p className="text-xl text-muted-foreground mb-12 leading-relaxed">
-              You're just one click away from discovering your next hair color obsession. Whether you're planning a
-              major change or just having fun with fantasies, our AI Hair Color Changer is the easiest way to reinvent
-              yourself virtually. Join thousands of users who've found their perfect shade without a single drop of dye.
-            </p>
+      <section className="py-24 bg-gradient-to-r from-primary/10 via-orange-500/10 to-primary/10 text-center">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-4xl lg:text-5xl font-bold mb-6">
+            Ready for Your Virtual Hair Makeover?
+          </h2>
+          <p className="text-xl text-muted-foreground mb-12 leading-relaxed">
+            You're just one click away from discovering your next hair color obsession. Whether you're planning a
+            major change or just having fun with fantasies, our AI Hair Color Changer is the easiest way to reinvent
+            yourself virtually. Join thousands of users who've found their perfect shade without a single drop of dye.
+          </p>
 
-            <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-8">
-              <CoolMode options={{ particle: '🎨' }}>
-                <ConfettiButton
-                  size="lg"
-                  className="px-12 py-6 text-xl font-bold bg-gradient-to-r from-primary to-orange-500 hover:from-orange-500 hover:to-primary transition-all duration-300 shadow-xl hover:shadow-2xl"
-                  options={{
-                    particleCount: 150,
-                    spread: 100,
-                    origin: { y: 0.6 },
-                    colors: ['#f1a13a', '#ff6b35', '#ff9a5a'],
-                  }}
-                >
-                  Try It Now - It's Free! ✨
-                </ConfettiButton>
-              </CoolMode>
-            </div>
-
-            <p className="text-sm text-muted-foreground">
-              Upload a photo & see your new look! No signup required • Works on all devices • Instant results
-            </p>
+          <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-8">
+            <ConfettiButton
+              size="lg"
+              className="px-12 py-6 text-xl font-bold bg-gradient-to-r from-primary to-orange-500 hover:from-orange-500 hover:to-primary transition-all duration-300 shadow-xl hover:shadow-2xl"
+              options={{
+                particleCount: 150,
+                spread: 100,
+                origin: { y: 0.6 },
+                colors: ['#f1a13a', '#ff6b35', '#ff9a5a'],
+              }}
+              onClick={() => {
+                document.getElementById('hair-color-changer')?.scrollIntoView({ behavior: 'smooth' });
+              }}
+            >
+              Try It Now - It's Free! ✨
+            </ConfettiButton>
           </div>
+          <p className="text-sm text-muted-foreground">
+            Upload a photo & see your new look! No signup required • Works on all devices • Instant results
+          </p>
         </div>
       </section>
     </div>

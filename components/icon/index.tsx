@@ -55,6 +55,11 @@ import {
     RiTwitterXLine,
     RiTwitterXFill,
     RiUpload2Line,
+    RiCheckboxCircleLine,
+    RiTimeLine,
+    RiSmartphoneLine,
+    RiLockLine,
+    RiFlashlightLine,
 } from 'react-icons/ri';
 
 // 精确映射每个具体图标
@@ -113,6 +118,11 @@ const iconMap: { [key: string]: React.ElementType } = {
     RiLinkedinLine,
     RiShareLine,
     RiFileCopyLine,
+    RiCheckboxCircleLine,
+    RiTimeLine,
+    RiSmartphoneLine,
+    RiLockLine,
+    RiFlashlightLine,
 };
 
 export function Icon({name, className, onClick}: { name: string; className?: string; onClick?: () => void }) {

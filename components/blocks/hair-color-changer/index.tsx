@@ -255,6 +255,9 @@ export default function HairColorChangerBlock() {
           console.log('开始轮询任务状态，任务数量:', currentProcessingTasks.length);
           console.log('准备轮询的任务列表:', currentProcessingTasks.map(t => ({ id: t.userMediaRecordId, index: t.index })));
           
+          // 用于跟踪本轮完成的任务
+          const completedTasksThisRound = new Set<string>();
+          
           const taskPromises = currentProcessingTasks.map(async (task) => {
             console.log(`=== 开始处理任务 ${task.index}, ID: ${task.userMediaRecordId} ===`);
             if (!task.userMediaRecordId) {
@@ -270,6 +273,10 @@ export default function HairColorChangerBlock() {
               
               if (data.isCompleted) {
                 console.log('轮询检测到任务完成:', task.userMediaRecordId, data);
+                
+                // 记录本轮完成的任务
+                completedTasksThisRound.add(task.userMediaRecordId);
+                
                 setBatchProcessingStatus(prev => {
                   const updatedTasks = prev.tasks.map(t => 
                     t.userMediaRecordId === task.userMediaRecordId
@@ -295,6 +302,11 @@ export default function HairColorChangerBlock() {
               }
               
               if (data.isFailed) {
+                console.log('轮询检测到任务失败:', task.userMediaRecordId, data);
+                
+                // 记录本轮完成的任务（失败也算完成）
+                completedTasksThisRound.add(task.userMediaRecordId);
+                
                 setBatchProcessingStatus(prev => {
                   const updatedTasks = prev.tasks.map(t => 
                     t.userMediaRecordId === task.userMediaRecordId
@@ -337,6 +349,35 @@ export default function HairColorChangerBlock() {
           console.log('=== 等待所有任务轮询完成 ===');
           await Promise.all(taskPromises);
           console.log('=== 本轮轮询完成 ===');
+          
+          // 检查是否有任务完成，如果是则重新评估是否需要继续轮询
+          if (completedTasksThisRound.size > 0) {
+            console.log(`本轮有 ${completedTasksThisRound.size} 个任务完成，重新检查轮询状态`);
+            
+            // 重新计算当前的处理中任务（基于最新状态）
+            const updatedProcessingTasks = currentTasks.filter(task => {
+              const hasId = !!task.userMediaRecordId;
+              const isSuccess = !!task.success;
+              const isCompleted = completedTasksThisRound.has(task.userMediaRecordId!) || task.status === 'completed' || task.status === 'failed';
+              const isProcessing = (task.status === 'pending' || task.status === 'processing') && !isCompleted;
+              
+              console.log(`重新检查任务 ${task.index}: userMediaRecordId=${hasId}, success=${isSuccess}, status=${task.status}, isCompleted=${isCompleted}, isProcessing=${isProcessing}`);
+              
+              return hasId && isSuccess && isProcessing;
+            });
+            
+            if (updatedProcessingTasks.length === 0) {
+              console.log('所有任务已完成，停止轮询');
+              if (pollingTimerRef.current) {
+                clearInterval(pollingTimerRef.current);
+                pollingTimerRef.current = null;
+                setIsPolling(false);
+              }
+              return;
+            } else {
+              console.log(`还有 ${updatedProcessingTasks.length} 个任务未完成，继续轮询`);
+            }
+          }
         } catch (error) {
           console.error('=== 批量轮询过程出错 ===');
           console.error('Batch polling failed:', error);

@@ -68,9 +68,9 @@ export function ResultGrid({
       <div className={cn("text-center py-8", className)}>
         <div className="text-center space-y-2">
           <Icon name="RiMagicLine" className="h-8 w-8 text-muted-foreground mx-auto" />
-          <p className="text-sm text-muted-foreground">
+          <div className="text-sm text-muted-foreground">
             {t('start_transformation', { count: 0 })}
-          </p>
+          </div>
         </div>
       </div>
     );
@@ -146,26 +146,26 @@ export function ResultGrid({
                             className="w-20 h-20"
                           />
                         </div>
-                        <p className="text-xs text-muted-foreground">
+                        <div className="text-xs text-muted-foreground">
                           {t('processing_with_progress', { 
                             progress: task.progress || (task.userMediaRecordId ? localProgress[task.userMediaRecordId] || 0 : 0) 
                           })}
-                        </p>
+                        </div>
                       </div>
                     </div>
                   ) : task.status === 'failed' ? (
                     <div className="h-full bg-red-50 flex items-center justify-center">
                       <div className="text-center space-y-1">
                         <Icon name="RiErrorWarningLine" className="h-4 w-4 text-red-500 mx-auto" />
-                        <p className="text-xs text-red-600">{t('processing_failed')}</p>
-                        <p className="text-xs text-red-500">{task.error || 'Task timeout or processing failed'}</p>
+                        <div className="text-xs text-red-600">{t('processing_failed')}</div>
+                        <div className="text-xs text-red-500">{task.error || 'Task timeout or processing failed'}</div>
                       </div>
                     </div>
                   ) : (
                     <div className="h-full bg-muted flex items-center justify-center">
                       <div className="text-center space-y-1">
                         <Icon name="RiTimeLine" className="h-4 w-4 text-muted-foreground mx-auto" />
-                        <p className="text-xs text-muted-foreground">{t('waiting')}</p>
+                        <div className="text-xs text-muted-foreground">{t('waiting')}</div>
                       </div>
                     </div>
                   )}
