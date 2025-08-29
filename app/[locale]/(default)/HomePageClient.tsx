@@ -8,6 +8,7 @@ import { BorderBeam } from '@/components/magicui/border-beam';
 import { Particles } from '@/components/magicui/particles';
 import { CoolMode } from '@/components/magicui/cool-mode';
 import { ConfettiButton } from '@/components/magicui/confetti';
+import { BlurFade } from '@/components/magicui/blur-fade';
 import { useTheme } from 'next-themes';
 import HairColorChangerBlock from '@/components/blocks/hair-color-changer';
 import { Icon } from '@/components/icon';
@@ -237,44 +238,49 @@ export default function HomePageClient() {
       <div className="border-t border-border/30"></div>
 
       {/* Benefits Section */}
-      <section className="py-24   ">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl lg:text-5xl font-bold mb-6 text-center">
-              AI Hair Color Changer with Multiple Stylish Shades
-            </h2>
-            <p className="text-xl text-muted-foreground max-w-7xl mx-auto">
-              Join thousands of users who've found their perfect shade without a single drop of dye
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 max-w-6xl mx-auto">
-            {features.map((feature, index) => (
-              <div
-                key={index}
-                className={`p-8 hover:bg-primary/5 transition-all duration-300 group ${
-                  index === 0 ? 'border-r-0 md:border-r-2 border-b-2 border-border' :
-                    index === 1 ? 'border-b-2 border-border' :
-                      index === 2 ? 'border-r-0 md:border-r-2 border-border' :
-                        ''
-                }`}
-              >
-                <div className="flex items-start space-x-4">
-                  <div
-                    className="flex-shrink-0 w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center text-primary group-hover:bg-primary/20 transition-colors duration-300">
-                    {feature.icon}
-                  </div>
-                  <div>
-                    <h3
-                      className="text-xl font-semibold mb-3 group-hover:text-primary transition-colors duration-300">{feature.title}</h3>
-                    <p className="text-muted-foreground leading-relaxed">{feature.description}</p>
-                  </div>
-                </div>
+      <BlurFade delay={0.25} inView>
+        <section className="py-24   ">
+          <div className="container mx-auto px-4">
+            <BlurFade delay={0.35} inView>
+              <div className="text-center mb-16">
+                <h2 className="text-4xl lg:text-5xl font-bold mb-6 text-center">
+                  AI Hair Color Changer with Multiple Stylish Shades
+                </h2>
+                <p className="text-xl text-muted-foreground max-w-7xl mx-auto">
+                  Join thousands of users who've found their perfect shade without a single drop of dye
+                </p>
               </div>
-            ))}
+            </BlurFade>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 max-w-6xl mx-auto">
+              {features.map((feature, index) => (
+                <BlurFade key={index} delay={0.45 + index * 0.1} inView>
+                  <div
+                    className={`p-8 hover:bg-primary/5 transition-all duration-300 group ${
+                      index === 0 ? 'border-r-0 md:border-r-2 border-b-2 border-border' :
+                        index === 1 ? 'border-b-2 border-border' :
+                          index === 2 ? 'border-r-0 md:border-r-2 border-border' :
+                            ''
+                    }`}
+                  >
+                    <div className="flex items-start space-x-4">
+                      <div
+                        className="flex-shrink-0 w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center text-primary group-hover:bg-primary/20 transition-colors duration-300">
+                        {feature.icon}
+                      </div>
+                      <div>
+                        <h3
+                          className="text-xl font-semibold mb-3 group-hover:text-primary transition-colors duration-300">{feature.title}</h3>
+                        <p className="text-muted-foreground leading-relaxed">{feature.description}</p>
+                      </div>
+                    </div>
+                  </div>
+                </BlurFade>
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </BlurFade>
 
       {/* Gradient Divider */}
       <div className="relative">
@@ -282,95 +288,109 @@ export default function HomePageClient() {
       </div>
 
       {/* Key Features Section */}
-      <section className="py-24">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl lg:text-5xl font-bold mb-6">
-              Why You'll Love Our Virtual Hair Color Changer
-            </h2>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              Our AI-powered tool is designed for ultra-realistic results and a fun, seamless user experience
-            </p>
-          </div>
+      <BlurFade delay={0.25} inView>
+        <section className="py-24">
+          <div className="container mx-auto px-4">
+            <BlurFade delay={0.35} inView>
+              <div className="text-center mb-16">
+                <h2 className="text-4xl lg:text-5xl font-bold mb-6">
+                  Why You'll Love Our Virtual Hair Color Changer
+                </h2>
+                <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+                  Our AI-powered tool is designed for ultra-realistic results and a fun, seamless user experience
+                </p>
+              </div>
+            </BlurFade>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            {keyFeatures.map((feature, index) => (
-              <Card key={index} className="relative overflow-hidden group hover:shadow-lg transition-all duration-300">
-                <BorderBeam
-                  size={150}
-                  duration={6}
-                  delay={index * 2}
-                  colorFrom="#f1a13a"
-                  colorTo="#ff6b35"
-                />
-                <CardContent className="p-8">
-                  <div className="mb-4">{feature.icon}</div>
-                  <h3 className="text-xl font-semibold mb-4">{feature.title}</h3>
-                  <p className="text-muted-foreground leading-relaxed">{feature.description}</p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+              {keyFeatures.map((feature, index) => (
+                <BlurFade key={index} delay={0.45 + index * 0.15} inView>
+                  <Card className="relative overflow-hidden group hover:shadow-lg transition-all duration-300">
+                    <BorderBeam
+                      size={150}
+                      duration={6}
+                      delay={index * 2}
+                      colorFrom="#f1a13a"
+                      colorTo="#ff6b35"
+                    />
+                    <CardContent className="p-8">
+                      <div className="mb-4">{feature.icon}</div>
+                      <h3 className="text-xl font-semibold mb-4">{feature.title}</h3>
+                      <p className="text-muted-foreground leading-relaxed">{feature.description}</p>
+                    </CardContent>
+                  </Card>
+                </BlurFade>
+              ))}
+            </div>
 
-          <div className="mt-16 text-center">
-            <p className="text-sm text-muted-foreground mb-8">
-              <strong>100% Free & Online:</strong>
-              <p>
-                Experience all these benefits free of charge. Unlike salon
-                consultations or paid apps, our virtual hair color changer is free to use, anytime. It works in your web
-                browser (on mobile or desktop) – no downloads or installs needed.
-              </p>
-            </p>
+            <BlurFade delay={1.2} inView>
+              <div className="mt-16 text-center">
+                <p className="text-sm text-muted-foreground mb-8">
+                  <strong>100% Free & Online:</strong>
+                  <p>
+                    Experience all these benefits free of charge. Unlike salon
+                    consultations or paid apps, our virtual hair color changer is free to use, anytime. It works in your web
+                    browser (on mobile or desktop) – no downloads or installs needed.
+                  </p>
+                </p>
+              </div>
+            </BlurFade>
           </div>
-        </div>
-      </section>
+        </section>
+      </BlurFade>
 
       {/* Gradient Divider */}
       <div className="relative">
         <div className="h-px bg-gradient-to-r from-transparent via-primary to-transparent opacity-60"></div>
       </div>
 
-      <section className="py-24" ref={containerRef}>
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl lg:text-5xl font-bold mb-6">
-              From Selfie to New Hair Color in 3 Steps
-            </h2>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              You don't need to be tech-savvy or spend hours editing. Using our AI hair color changer is as easy as
-              1-2-3
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 max-w-6xl mx-auto relative">
-            {steps.map((step, index) => (
-              <div key={index} className="text-center relative"
-                   ref={index === 0 ? step1Ref : index === 1 ? step2Ref : step3Ref}>
-                <Card className="relative overflow-hidden group hover:shadow-lg transition-all duration-300 h-full">
-                  <BorderBeam
-                    size={150}
-                    duration={6}
-                    delay={index * 2}
-                    colorFrom="#f1a13a"
-                    colorTo="#ff6b35"
-                  />
-                  <CardContent className="p-8">
-                    <div
-                      className="w-16 h-16 bg-gradient-to-r from-primary to-orange-500 rounded-full flex items-center justify-center text-white text-2xl font-bold mx-auto mb-6">
-                      {step.step}
-                    </div>
-                    <div className="text-primary mb-4 flex justify-center">
-                      {step.icon}
-                    </div>
-                    <h3 className="text-xl font-semibold mb-4">{step.title}</h3>
-                    <p className="text-muted-foreground leading-relaxed">{step.description}</p>
-                  </CardContent>
-                </Card>
+      <BlurFade delay={0.25} inView>
+        <section className="py-24" ref={containerRef}>
+          <div className="container mx-auto px-4">
+            <BlurFade delay={0.35} inView>
+              <div className="text-center mb-16">
+                <h2 className="text-4xl lg:text-5xl font-bold mb-6">
+                  From Selfie to New Hair Color in 3 Steps
+                </h2>
+                <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+                  You don't need to be tech-savvy or spend hours editing. Using our AI hair color changer is as easy as
+                  1-2-3
+                </p>
               </div>
-            ))}
+            </BlurFade>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-12 max-w-6xl mx-auto relative">
+              {steps.map((step, index) => (
+                <BlurFade key={index} delay={0.45 + index * 0.2} inView>
+                  <div className="text-center relative"
+                       ref={index === 0 ? step1Ref : index === 1 ? step2Ref : step3Ref}>
+                    <Card className="relative overflow-hidden group hover:shadow-lg transition-all duration-300 h-full">
+                      <BorderBeam
+                        size={150}
+                        duration={6}
+                        delay={index * 2}
+                        colorFrom="#f1a13a"
+                        colorTo="#ff6b35"
+                      />
+                      <CardContent className="p-8">
+                        <div
+                          className="w-16 h-16 bg-gradient-to-r from-primary to-orange-500 rounded-full flex items-center justify-center text-white text-2xl font-bold mx-auto mb-6">
+                          {step.step}
+                        </div>
+                        <div className="text-primary mb-4 flex justify-center">
+                          {step.icon}
+                        </div>
+                        <h3 className="text-xl font-semibold mb-4">{step.title}</h3>
+                        <p className="text-muted-foreground leading-relaxed">{step.description}</p>
+                      </CardContent>
+                    </Card>
+                  </div>
+                </BlurFade>
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </BlurFade>
 
       {/* Gradient Divider */}
       <div className="relative">
@@ -378,71 +398,87 @@ export default function HomePageClient() {
       </div>
 
       {/* FAQ Section */}
-      <section className="py-24">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl lg:text-5xl font-bold mb-6">
-              FAQ – Frequently Asked Questions
-            </h2>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              Everything you need to know about our AI hair color changer
-            </p>
-          </div>
+      <BlurFade delay={0.25} inView>
+        <section className="py-24">
+          <div className="container mx-auto px-4">
+            <BlurFade delay={0.35} inView>
+              <div className="text-center mb-16">
+                <h2 className="text-4xl lg:text-5xl font-bold mb-6">
+                  Frequently Asked Questions
+                </h2>
+                <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+                  Everything you need to know about our AI hair color changer
+                </p>
+              </div>
+            </BlurFade>
 
-          <div className="max-w-4xl mx-auto">
-            <Accordion type="single" collapsible className="space-y-4">
-              {faqData.map((faq, index) => (
-                <AccordionItem key={index} value={`item-${index}`}
-                               className="bg-card rounded-lg border overflow-hidden">
-                  <AccordionTrigger className="px-6 text-left font-semibold hover:no-underline py-6">
-                    {faq.question}
-                  </AccordionTrigger>
-                  <AccordionContent className="px-6 text-muted-foreground leading-relaxed">
-                    {faq.answer}
-                  </AccordionContent>
-                </AccordionItem>
-              ))}
-            </Accordion>
+            <BlurFade delay={0.5} inView>
+              <div className="max-w-4xl mx-auto">
+                <Accordion type="single" collapsible className="space-y-4">
+                  {faqData.map((faq, index) => (
+                    <AccordionItem key={index} value={`item-${index}`}
+                                   className="bg-card rounded-lg border overflow-hidden">
+                      <AccordionTrigger className="px-6 text-left font-semibold hover:no-underline py-6">
+                        {faq.question}
+                      </AccordionTrigger>
+                      <AccordionContent className="px-6 text-muted-foreground leading-relaxed">
+                        {faq.answer}
+                      </AccordionContent>
+                    </AccordionItem>
+                  ))}
+                </Accordion>
+              </div>
+            </BlurFade>
           </div>
-        </div>
-      </section>
+        </section>
+      </BlurFade>
 
       <div className="border-t border-border/30"></div>
 
       {/* Final CTA Section */}
-      <section className="py-24 bg-gradient-to-r from-primary/10 via-orange-500/10 to-primary/10 text-center">
-        <div className="max-w-4xl mx-auto">
-          <h2 className="text-4xl lg:text-5xl font-bold mb-6">
-            Ready for Your Virtual Hair Makeover?
-          </h2>
-          <p className="text-xl text-muted-foreground mb-12 leading-relaxed">
-            You're just one click away from discovering your next hair color obsession. Whether you're planning a
-            major change or just having fun with fantasies, our AI Hair Color Changer is the easiest way to reinvent
-            yourself virtually. Join thousands of users who've found their perfect shade without a single drop of dye.
-          </p>
+      <BlurFade delay={0.25} inView>
+        <section className="py-24 bg-gradient-to-r from-primary/10 via-orange-500/10 to-primary/10 text-center">
+          <div className="max-w-4xl mx-auto">
+            <BlurFade delay={0.35} inView>
+              <h2 className="text-4xl lg:text-5xl font-bold mb-6">
+                Ready for Your Virtual Hair Makeover?
+              </h2>
+            </BlurFade>
+            <BlurFade delay={0.45} inView>
+              <p className="text-xl text-muted-foreground mb-12 leading-relaxed">
+                You're just one click away from discovering your next hair color obsession. Whether you're planning a
+                major change or just having fun with fantasies, our AI Hair Color Changer is the easiest way to reinvent
+                yourself virtually. Join thousands of users who've found their perfect shade without a single drop of dye.
+              </p>
+            </BlurFade>
 
-          <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-8">
-            <ConfettiButton
-              size="lg"
-              className="px-12 py-6 text-xl font-bold bg-gradient-to-r from-primary to-orange-500 hover:from-orange-500 hover:to-primary transition-all duration-300 shadow-xl hover:shadow-2xl"
-              options={{
-                particleCount: 150,
-                spread: 100,
-                origin: { y: 0.6 },
-                colors: ['#f1a13a', '#ff6b35', '#ff9a5a'],
-              }}
-              onClick={() => {
-                document.getElementById('hair-color-changer')?.scrollIntoView({ behavior: 'smooth' });
-              }}
-            >
-              Try It Now - It's Free! ✨
-            </ConfettiButton>
+            <BlurFade delay={0.55} inView>
+              <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-8">
+                <ConfettiButton
+                  size="lg"
+                  className="px-12 py-6 text-xl font-bold bg-gradient-to-r from-primary to-orange-500 hover:from-orange-500 hover:to-primary transition-all duration-300 shadow-xl hover:shadow-2xl"
+                  options={{
+                    particleCount: 150,
+                    spread: 100,
+                    origin: { y: 0.6 },
+                    colors: ['#f1a13a', '#ff6b35', '#ff9a5a'],
+                  }}
+                  onClick={() => {
+                    document.getElementById('hair-color-changer')?.scrollIntoView({ behavior: 'smooth' });
+                  }}
+                >
+                  Try It Now - It's Free! ✨
+                </ConfettiButton>
+              </div>
+            </BlurFade>
+            <BlurFade delay={0.65} inView>
+              <p className="text-sm text-muted-foreground">
+                Upload a photo & see your new look! No signup required • Works on all devices • Instant results
+              </p>
+            </BlurFade>
           </div>
-          <p className="text-sm text-muted-foreground">
-            Upload a photo & see your new look! No signup required • Works on all devices • Instant results
-          </p>
-        </div>
-      </section>
+        </section>
+      </BlurFade>
     </div>
   );
 }

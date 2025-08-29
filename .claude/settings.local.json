@@ -35,7 +35,9 @@
       "Bash(pnpm run:*)",
       "mcp__mcp-magic-ui__getButtons",
       "Bash(npm run lint)",
-      "mcp__mcp-magic-ui__getComponents"
+      "mcp__mcp-magic-ui__getComponents",
+      "mcp__mcp-magic-ui__getAnimations",
+      "mcp__mcp-magic-ui__getTextAnimations"
     ],
     "deny": []
   }
