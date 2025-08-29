@@ -188,6 +188,7 @@
       "type": "Type",
       "status": "Status",
       "name": "Name",
+      "detail": "Detail",
       "biz_code": "Business Code"
     },
     "no_records": "No media records yet."

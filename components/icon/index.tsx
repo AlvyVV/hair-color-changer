@@ -62,6 +62,8 @@ import {
   RiTwitterXLine,
   RiUpload2Line,
   RiUploadLine,
+  RiOrderPlayLine,
+  RiBankCardLine,
 } from 'react-icons/ri';
 
 // 精确映射每个具体图标
@@ -126,6 +128,8 @@ const iconMap: { [key: string]: React.ElementType } = {
   RiSmartphoneLine,
   RiLockLine, RiUploadLine,
   RiFlashlightLine,
+  RiOrderPlayLine,
+  RiBankCardLine,
 };
 
 export function Icon({ name, className, onClick }: { name: string; className?: string; onClick?: () => void }) {
