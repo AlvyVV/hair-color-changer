@@ -8,13 +8,13 @@
   {
     "id": "color_2",
     "name": "Style 2",
-    "imageUrl": "/imgs/xref6.jpeg",
+    "imageUrl": "/imgs/xref88.jpeg",
     "category": "natural"
   },
   {
     "id": "color_3",
     "name": "Style 3",
-    "imageUrl": "/imgs/xref8.jpeg",
+    "imageUrl": "/imgs/xref104.jpeg",
     "category": "natural"
   },
   {
@@ -50,7 +50,7 @@
   {
     "id": "color_9",
     "name": "Style 9",
-    "imageUrl": "/imgs/xref20.jpeg",
+    "imageUrl": "/imgs/xref118.jpeg",
     "category": "trendy"
   },
   {
@@ -62,7 +62,7 @@
   {
     "id": "color_11",
     "name": "Style 11",
-    "imageUrl": "/imgs/xref24.jpeg",
+    "imageUrl": "/imgs/xref106.jpeg",
     "category": "trendy"
   },
   {
@@ -74,25 +74,37 @@
   {
     "id": "color_13",
     "name": "Style 13",
-    "imageUrl": "/imgs/xref28.jpeg",
+    "imageUrl": "/imgs/xref122.jpeg",
     "category": "bright"
   },
   {
     "id": "color_14",
     "name": "Style 14",
-    "imageUrl": "/imgs/xref30.jpeg",
+    "imageUrl": "/imgs/xref202.jpeg",
     "category": "bright"
   },
   {
     "id": "color_15",
     "name": "Style 15",
-    "imageUrl": "/imgs/xref32.jpeg",
+    "imageUrl": "/imgs/xref234.jpeg",
     "category": "bright"
   },
   {
     "id": "color_16",
     "name": "Style 16",
-    "imageUrl": "/imgs/xref34.jpeg",
+    "imageUrl": "/imgs/xref238.jpeg",
+    "category": "bright"
+  },
+  {
+    "id": "color_16",
+    "name": "Style 16",
+    "imageUrl": "/imgs/xref192.jpeg",
+    "category": "bright"
+  },
+  {
+    "id": "color_16",
+    "name": "Style 16",
+    "imageUrl": "/imgs/xref178.jpeg",
     "category": "bright"
   }
 ]
